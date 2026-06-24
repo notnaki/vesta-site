@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halo — a GPU-native terminal you script instead of a multiplexer you run inside one</title>
+<meta name="description" content="Halo is a native macOS terminal built on real libghostty (GPU/Metal) with a first-class agent-control CLI and git-worktree-isolated sessions. Alpha, macOS-only.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="assets/halo-logo.svg" alt="Halo logo">
+      <span class="mk">Halo</span>
+    </a>
+    <span class="spacer"></span>
+    <a class="lnk" href="#different">why</a>
+    <a class="lnk" href="#agent">agent cli</a>
+    <a class="lnk" href="#install">install</a>
+    <a class="lnk keep" href="docs.html">docs</a>
+    <a class="ghbtn keep" href="https://github.com/notnaki/Halo" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-copy">
+      <span class="kicker"><span class="dot"></span> native · libghostty · alpha</span>
+      <h1><span class="redact" data-redact>Halo</span></h1>
+      <p class="tagline">The terminal that an <em>agent</em> can drive — and watch.</p>
+      <p class="cmux">
+        Think <b>cmux</b>, but as a <b>GPU-native terminal you script</b> — not a
+        multiplexer you run inside one. Halo <em>is</em> the terminal: real Metal
+        rendering, your full Ghostty config, and a control socket an AI agent can
+        talk to.
+      </p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#install">Build from source</a>
+        <a class="btn ghost" href="docs.html">Read the docs</a>
+      </div>
+      <p class="meta-line"><span class="tag">alpha</span> · macOS-only · single-window today · unsigned build</p>
+    </div>
+
+    <div class="hero-stage">
+      <div class="halo-ring" aria-hidden="true">
+        <svg viewBox="0 0 230 130">
+          <ellipse class="core" cx="115" cy="58" rx="92" ry="34" fill="none" stroke-width="9"/>
+        </svg>
+        <div class="prompt">&gt;<span class="cur">_</span></div>
+      </div>
+
+      <div class="term" role="img" aria-label="Terminal showing an agent driving Halo: halo split, send-keys, capture, worktree.">
+        <div class="bar">
+          <span class="d"></span><span class="d"></span><span class="d"></span>
+          <span class="t">halo — control socket</span>
+        </div>
+        <pre data-type='[
+          {"t":"cmd","v":"halo worktree fix/login"},
+          {"t":"out","v":"ok  · isolated worktree session on fix/login","c":"ok"},
+          {"t":"cmd","v":"halo split -h"},
+          {"t":"out","v":"ok","c":"ok"},
+          {"t":"cmd","v":"halo send-keys focused \"npm test\""},
+          {"t":"out","v":"ok","c":"ok"},
+          {"t":"cmd","v":"halo capture focused --scrollback"},
+          {"t":"out","v":"  Tests:  3 failed, 41 passed","c":"dim2"},
+          {"t":"out","v":"  → handing scrollback back to the agent…","c":"dim2"}
+        ]'>$ </pre>
+      </div>
+    </div>
+  </div>
+</header>
+
+<hr class="rule">
+
+<!-- ============ WHY DIFFERENT ============ -->
+<section class="sec" id="different">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">001 — what makes it different</span>
+      <h2>Not a fork. Not a <span class="d35">multiplexer.</span></h2>
+      <p class="lede">Three things Halo does that a terminal-plus-tmux stack can't, because Halo isn't running inside another terminal — it is one.</p>
+    </div>
+
+    <div class="diff">
+      <div class="row">
+        <div class="idx">01</div>
+        <div class="body">
+          <h3>It IS the terminal — real libghostty, on the GPU</h3>
+          <p>Halo embeds <em>actual</em> libghostty and renders with Metal. No web view, no
+          shim, no terminal-inside-a-terminal. It reads your real Ghostty config, so any
+          Ghostty key works — <code>theme</code>, <code>font-family</code>, <code>palette</code>,
+          <code>cursor-color</code>, <code>window-padding-x</code> — and colors sync straight from it.</p>
+        </div>
+      </div>
+      <div class="row alt">
+        <div class="idx">02</div>
+        <div class="body">
+          <h3>A first-class agent-control CLI</h3>
+          <p>Every Halo lives behind a unix socket. The <code>halo</code> CLI lets a script — or an
+          AI agent — both <em>drive</em> and <em>observe</em> terminals: <code>send-keys</code> to type,
+          <code>capture --scrollback</code> to read output back, plus <code>split</code>, <code>focus</code>,
+          <code>zoom</code>, <code>list</code> and <code>reload</code>. Closed loop, not fire-and-forget.</p>
+        </div>
+      </div>
+      <div class="row alt2">
+        <div class="idx">03</div>
+        <div class="body">
+          <h3>Git-worktree-isolated sessions</h3>
+          <p>One call — <code>halo worktree fix/login</code> — spins up an isolated git worktree on
+          its own branch and opens it as a fresh session. Each task gets a clean tree; agents
+          can fan out across branches without stepping on your working copy.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ AGENT DEMO ============ -->
+<section class="sec demo" id="agent">
+  <div class="wrap">
+    <div class="copy">
+      <span class="sec-num">002 — drive &amp; observe</span>
+      <h2 style="font-family:var(--display);font-weight:400;font-size:clamp(32px,5vw,52px);line-height:1;margin:0 0 16px;">Scriptable<br>by agents.</h2>
+      <p>The control socket turns a window into an API surface. Point an agent loop at it
+      and it can act, then read what happened — the part most “AI terminal” tools skip.</p>
+      <ul>
+        <li><code>halo split</code> — carve the focused pane</li>
+        <li><code>halo send-keys focused "…"</code> — type into a pane</li>
+        <li><code>halo capture --scrollback</code> — read output back</li>
+        <li><code>halo worktree fix/login</code> — isolated branch session</li>
+        <li><code>halo list</code> — panes &amp; tabs as JSON</li>
+      </ul>
+    </div>
+
+    <div class="term">
+      <div class="bar">
+        <span class="d"></span><span class="d"></span><span class="d"></span>
+        <span class="t">~/Library/Application Support/halo/control.sock</span>
+      </div>
+<pre><span class="dim2"># an agent investigates a failing test, end to end</span>
+<span class="pr">$ </span><span class="cmd">halo worktree <span class="flag">fix/login</span> --base main</span>
+<span class="ok">ok</span>  <span class="dim2">· session on fix/login</span>
+<span class="pr">$ </span><span class="cmd">halo split <span class="flag">-h</span></span>
+<span class="ok">ok</span>
+<span class="pr">$ </span><span class="cmd">halo send-keys <span class="flag">focused</span> "npm test -- auth"</span>
+<span class="ok">ok</span>
+<span class="pr">$ </span><span class="cmd">halo capture <span class="flag">focused --scrollback</span></span>
+  FAIL  auth/login.test.ts
+  <span class="dim2">expected 200, received 401</span>
+<span class="pr">$ </span><span class="cmd">halo list</span>
+<span class="dim2">[{"id":1,"cwd":"~/wt/fix-login"},{"id":2,"cwd":"~/wt/fix-login"}]</span>
+</pre>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ HONEST / WHO IT'S FOR ============ -->
+<section class="sec honest">
+  <div class="wrap">
+    <div class="col for">
+      <h3>Reach for Halo if</h3>
+      <ul>
+        <li>You drive terminals with AI agents or scripts</li>
+        <li>You want a real GPU terminal, not a layer inside one</li>
+        <li>You run many tasks and want one isolated worktree each</li>
+        <li>You already live in a Ghostty config you'd rather keep</li>
+      </ul>
+    </div>
+    <div class="col not">
+      <h3>Honestly, skip it if</h3>
+      <ul>
+        <li>You just want a great terminal to type in by hand</li>
+        <li>You need Linux or Windows — it's macOS-only</li>
+        <li>You need multiple windows today — it's single-window</li>
+        <li>You want signed, polished, stable — this is alpha</li>
+      </ul>
+    </div>
+    <p class="pull">If you're not pointing an agent at it, plain <em>Ghostty</em> is the saner choice. Halo wins on native + scriptable + worktree-per-task.</p>
+  </div>
+</section>
+
+<hr class="rule">
+
+<!-- ============ INSTALL ============ -->
+<section class="sec install" id="install">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="sec-num">003 — install</span>
+      <h2>Build it from <span class="d35">source.</span></h2>
+      <p class="lede">No release binaries yet. You build Halo.app yourself with the bundled script — it's an unsigned alpha, so macOS will ask before opening it the first time.</p>
+    </div>
+
+    <div class="grid">
+      <ol class="steps">
+        <li><b>Clone the repo.</b> You'll need macOS, Xcode command-line tools, and Swift.</li>
+        <li><b>Run <span class="inline-code">./make-app.sh</span>.</b> It builds and bundles <span class="inline-code">Halo.app</span> with libghostty and the fonts.</li>
+        <li><b>First launch:</b> right-click → Open (it's unsigned), or clear quarantine, then allow it.</li>
+        <li><b>Optional:</b> put the <span class="inline-code">halo</span> CLI on your <span class="inline-code">PATH</span> to drive the running app from scripts and agents.</li>
+      </ol>
+
+      <div>
+        <div class="term">
+          <div class="bar">
+            <span class="d"></span><span class="d"></span><span class="d"></span>
+            <span class="t">build</span>
+          </div>
+<pre><span class="pr">$ </span><span class="cmd">git clone https://github.com/notnaki/Halo</span>
+<span class="pr">$ </span><span class="cmd">cd Halo</span>
+<span class="pr">$ </span><span class="cmd">./make-app.sh</span>
+<span class="dim2">› building Halo.app … done</span>
+<span class="pr">$ </span><span class="cmd">open Halo.app</span>
+</pre>
+        </div>
+        <div class="callout" style="margin-top:20px;">
+          <div class="lbl">alpha · unsigned</div>
+          <p>Halo is early and macOS-only, with a single window for now. Things will change and break. If you hit a wall, plain Ghostty is always there.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="big">Ha<span class="d70">lo</span></div>
+    <div class="links">
+      <a href="https://github.com/notnaki/Halo" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="docs.html">Documentation</a>
+      <a href="docs.html#cli">Agent control CLI</a>
+      <a href="https://ghostty.org" target="_blank" rel="noopener">Built on Ghostty ↗</a>
+    </div>
+    <p class="fine">A native macOS terminal on real libghostty · scriptable by agents · worktree-per-task. Alpha software, no warranty.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>

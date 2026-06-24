@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Halo — Docs · config, keybindings, agent control CLI</title>
+<meta name="description" content="Halo documentation: halo-* config keys with defaults, the Ghostty keys it inherits, keybindings, and the agent-control CLI over the unix socket.">
+<link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="wrap">
+    <a class="brand" href="index.html">
+      <img src="assets/halo-logo.svg" alt="Halo logo">
+      <span class="mk">Halo</span>
+    </a>
+    <span class="spacer"></span>
+    <a class="lnk keep" href="index.html">home</a>
+    <a class="lnk" href="#config">config</a>
+    <a class="lnk" href="#keys">keys</a>
+    <a class="lnk" href="#cli">cli</a>
+    <a class="ghbtn keep" href="https://github.com/notnaki/Halo" target="_blank" rel="noopener">GitHub ↗</a>
+  </div>
+</nav>
+
+<div class="wrap">
+  <div class="docs-layout">
+
+    <!-- TOC -->
+    <aside class="toc">
+      <div class="grp">
+        <div class="grp-t">Configuration</div>
+        <a href="#config">Halo keys</a>
+        <a href="#ghostty">Inherited Ghostty keys</a>
+        <a href="#projects">Projects &amp; sidebar</a>
+      </div>
+      <div class="grp">
+        <div class="grp-t">Keybindings</div>
+        <a href="#keys">Panes &amp; sessions</a>
+        <a href="#keys-window">Window &amp; app</a>
+      </div>
+      <div class="grp">
+        <div class="grp-t">Agent control</div>
+        <a href="#cli">The halo CLI</a>
+        <a href="#verbs">Verbs</a>
+        <a href="#socket">The socket</a>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="doc-main">
+      <div class="doc-hero">
+        <h1>Docs<span class="d35">.</span></h1>
+        <p>Halo reads your real Ghostty config and adds a handful of <code>halo-</code> keys on top.
+        Below: those keys with their defaults, the common Ghostty options you inherit for free,
+        the keybindings, and the agent-control CLI.</p>
+      </div>
+
+      <!-- ===== CONFIG ===== -->
+      <section class="doc-sec" id="config">
+        <h2>Halo config keys</h2>
+        <p class="sub">Put these in your Ghostty config (or Halo's own config once you import it). libghostty
+        ignores unknown keys, so the <code>halo-</code> keys pass straight through. Every value defaults to
+        Halo's current look — an empty config changes nothing.</p>
+
+        <table class="tbl">
+          <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><code>halo-projects</code></td>
+              <td class="def">—</td>
+              <td>Comma-separated directories shown as projects in the sidebar, e.g. <code>~/a, ~/b</code>.</td>
+            </tr>
+            <tr>
+              <td><code>halo-accent</code></td>
+              <td class="def">theme accent</td>
+              <td>Selection / focus / tab accent color, e.g. <code>#889b94</code>. Falls back to the theme accent.</td>
+            </tr>
+            <tr>
+              <td><code>halo-surface</code></td>
+              <td class="def">ghostty <code>background</code></td>
+              <td>Window + pane background override, e.g. <code>#161719</code>. Defaults to your Ghostty <code>background</code>.</td>
+            </tr>
+            <tr>
+              <td><code>halo-sidebar-width</code></td>
+              <td class="def">224</td>
+              <td>Sidebar width in pixels.</td>
+            </tr>
+            <tr>
+              <td><code>halo-font-family</code></td>
+              <td class="def">GeistMono</td>
+              <td>Family for UI / directory / tab / project text.</td>
+            </tr>
+            <tr>
+              <td><code>halo-font-mono</code></td>
+              <td class="def">MartianMono</td>
+              <td>Family for the uppercase instrument labels.</td>
+            </tr>
+            <tr>
+              <td><code>halo-font-size</code></td>
+              <td class="def">13</td>
+              <td>Base UI font size in points; scales all chrome text.</td>
+            </tr>
+            <tr>
+              <td><code>halo-divider-width</code></td>
+              <td class="def">8</td>
+              <td>Grab/draw thickness of the split divider, in pixels.</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="note">
+          <b>Two config locations.</b> Halo reads your live Ghostty config by default
+          (so colors stay in sync). Once you use <b>Import ghostty config</b> or the Settings
+          panel, Halo writes its own file at <code>~/.config/halo/config</code> (or
+          <code>$XDG_CONFIG_HOME/halo/config</code>) and that one wins. Reload live with
+          <code>halo reload</code>.
+        </div>
+
+        <h3 id="ghostty">Inherited Ghostty keys</h3>
+        <p>Because Halo embeds real libghostty and parses your Ghostty config, <b>any</b> Ghostty
+        key works. Colors (<code>background</code>, <code>foreground</code>, <code>palette</code>) sync
+        straight into Halo. A curated set of common ones:</p>
+
+        <table class="tbl">
+          <tbody>
+            <tr><td><code>theme</code></td><td>Named Ghostty theme; resolves color palette for the whole window.</td></tr>
+            <tr><td><code>font-family</code></td><td>Terminal (cell) font family.</td></tr>
+            <tr><td><code>font-size</code></td><td>Terminal font size in points.</td></tr>
+            <tr><td><code>background</code> / <code>foreground</code></td><td>Terminal background / text colors. Halo's surface defaults to <code>background</code>.</td></tr>
+            <tr><td><code>palette = N=#rrggbb</code></td><td>One of the 16 ANSI colors; synced into Halo.</td></tr>
+            <tr><td><code>cursor-color</code></td><td>Cursor color.</td></tr>
+            <tr><td><code>selection-background</code> / <code>selection-foreground</code></td><td>Selection colors.</td></tr>
+            <tr><td><code>window-padding-x</code> / <code>window-padding-y</code></td><td>Inner padding around the terminal grid.</td></tr>
+            <tr><td><code>cursor-style</code></td><td><code>block</code>, <code>bar</code>, or <code>underline</code>.</td></tr>
+            <tr><td><code>background-opacity</code></td><td>Window background opacity (0–1).</td></tr>
+          </tbody>
+        </table>
+        <p>Full reference: <a href="https://ghostty.org/docs/config" target="_blank" rel="noopener">ghostty.org/docs/config ↗</a>.</p>
+
+        <h3 id="projects">Projects &amp; sidebar</h3>
+        <p>List directories in <code>halo-projects</code> to populate the sidebar. Each project holds its own
+        sessions; sessions can be plain shells or git-worktree-isolated branches (see
+        <a href="#verbs"><code>worktree</code></a>). Toggle the sidebar with <kbd>⌘ B</kbd>.</p>
+      </section>
+
+      <!-- ===== KEYBINDINGS ===== -->
+      <section class="doc-sec" id="keys">
+        <h2>Keybindings</h2>
+        <p class="sub">Halo's built-in shortcuts. Panes live inside sessions; sessions live inside projects.</p>
+
+        <h3>Panes &amp; sessions</h3>
+        <table class="keys">
+          <tbody>
+            <tr><td><kbd>⌘ D</kbd></td><td>Split the focused pane vertically</td></tr>
+            <tr><td><kbd>⌘ ⇧ D</kbd></td><td>Split the focused pane horizontally</td></tr>
+            <tr><td><kbd>⌘ W</kbd></td><td>Close the focused pane — closes the session if it's the last pane</td></tr>
+            <tr><td><kbd>⌘ ⇧ W</kbd></td><td>Close the whole session</td></tr>
+            <tr><td><kbd>⌘ T</kbd></td><td>New session in the active project</td></tr>
+            <tr><td><kbd>⌘ ]</kbd></td><td>Focus the next pane</td></tr>
+            <tr><td><kbd>⌘ [</kbd></td><td>Focus the previous pane</td></tr>
+            <tr><td><kbd>⌘ }</kbd></td><td>Next session</td></tr>
+            <tr><td><kbd>⌘ {</kbd></td><td>Previous session</td></tr>
+            <tr><td><kbd>⌘ 1</kbd> – <kbd>⌘ 9</kbd></td><td>Select session 1–9 in the active project</td></tr>
+          </tbody>
+        </table>
+
+        <h3 id="keys-window">Window &amp; app</h3>
+        <table class="keys">
+          <tbody>
+            <tr><td><kbd>⌘ B</kbd></td><td>Toggle the sidebar</td></tr>
+            <tr><td><kbd>⌘ ⇧ ⏎</kbd></td><td>Open a browser pane (the focused session's detected port, else blank)</td></tr>
+            <tr><td><kbd>⌘ ,</kbd></td><td>Open Settings</td></tr>
+            <tr><td><kbd>⌃ ⌘ F</kbd></td><td>Toggle full screen</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- ===== CLI ===== -->
+      <section class="doc-sec" id="cli">
+        <h2>Agent control CLI</h2>
+        <p class="sub">Drive &amp; observe a running Halo from scripts or AI agents. The <code>halo</code> binary talks
+        to the app over a unix socket: launch with no args to start the GUI, or pass a verb to control the
+        running app.</p>
+
+        <div class="codeblock">
+<pre><span class="cm"># launch the GUI</span>
+<span class="pr">$ </span><span class="cmd">halo</span>
+
+<span class="cm"># drive the running app</span>
+<span class="pr">$ </span><span class="cmd">halo <span class="flag">&lt;verb&gt;</span> [args]</span>
+
+<span class="pr">$ </span><span class="cmd">halo help</span>   <span class="cm"># discoverable capability list</span></pre>
+        </div>
+
+        <h3 id="verbs">Verbs</h3>
+        <table class="tbl">
+          <thead><tr><th>Verb</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td><code>split [-h|--horizontal] [--cwd DIR]</code></td><td>Split the focused pane (vertical by default)</td></tr>
+            <tr><td><code>new-pane [--cwd DIR]</code></td><td>Open a new pane next to the focused one</td></tr>
+            <tr><td><code>close</code></td><td>Close the focused pane</td></tr>
+            <tr><td><code>focus [ID]</code></td><td>Focus pane <code>ID</code>, or cycle to the next</td></tr>
+            <tr><td><code>zoom</code></td><td>Toggle zoom on the focused pane</td></tr>
+            <tr><td><code>send-keys &lt;ID|focused&gt; &lt;text&gt;</code></td><td>Type text into a pane</td></tr>
+            <tr><td><code>capture [ID|focused] [--scrollback]</code></td><td>Print a pane's text — read output back into your agent loop</td></tr>
+            <tr><td><code>list</code></td><td>List panes / tabs as JSON</td></tr>
+            <tr><td><code>open [PATH]</code></td><td>Open <code>PATH</code> in a new tab (default <code>~</code>)</td></tr>
+            <tr><td><code>tab new|next|prev|close [--cwd DIR]</code></td><td>Manage tabs</td></tr>
+            <tr><td><code>worktree &lt;branch&gt; [--base &lt;ref&gt;]</code></td><td>Open a git-worktree-isolated session on <code>&lt;branch&gt;</code></td></tr>
+            <tr><td><code>browser [url|port]</code></td><td>Open an embedded browser pane (a port becomes <code>http://localhost:PORT</code>)</td></tr>
+            <tr><td><code>reload</code></td><td>Re-read the config and apply colors / font / theme live</td></tr>
+          </tbody>
+        </table>
+
+        <h3>A closed-loop example</h3>
+        <p>The point of <code>capture</code> is that an agent can <em>read what it did</em> — act, observe, decide:</p>
+        <div class="codeblock">
+<pre><span class="pr">$ </span><span class="cmd">halo worktree <span class="flag">fix/login</span> --base main</span>
+<span class="pr">$ </span><span class="cmd">halo split <span class="flag">-h</span></span>
+<span class="pr">$ </span><span class="cmd">halo send-keys <span class="flag">focused</span> "npm test"</span>
+<span class="pr">$ </span><span class="cmd">halo capture <span class="flag">focused --scrollback</span></span>   <span class="cm"># → scrollback back to the agent</span></pre>
+        </div>
+
+        <h3 id="socket">The socket</h3>
+        <p>The control socket lives at:</p>
+        <div class="codeblock"><pre>~/Library/Application Support/halo/control.sock</pre></div>
+        <p>It's owner-only (<code>0600</code>) — it can inject keystrokes and read scrollback, so no other local
+        user can connect. If the app isn't running, control verbs exit with
+        <code>halo: app not running</code>.</p>
+
+        <a class="back" href="index.html">← back to home</a>
+      </section>
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div class="big">Ha<span class="d70">lo</span></div>
+    <div class="links">
+      <a href="https://github.com/notnaki/Halo" target="_blank" rel="noopener">GitHub ↗</a>
+      <a href="index.html">Home</a>
+      <a href="https://ghostty.org/docs/config" target="_blank" rel="noopener">Ghostty config ref ↗</a>
+    </div>
+    <p class="fine">A native macOS terminal on real libghostty · scriptable by agents · worktree-per-task. Alpha software.</p>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+</body>
+</html>
