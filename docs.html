@@ -28,6 +28,8 @@
         <a href="#ghostty">Ghostty keys</a>
         <div class="grp-t">Keys</div>
         <a href="#keys">Keybindings</a>
+        <div class="grp-t">Sessions</div>
+        <a href="#sessions">Sessions &amp; persistence</a>
         <div class="grp-t">Control</div>
         <a href="#cli">Agent CLI</a>
       </aside>
@@ -53,6 +55,9 @@
               <tr><td class="k">halo-font-mono</td><td class="def">MartianMono</td><td class="desc">Instrument-label family (uppercase chips).</td></tr>
               <tr><td class="k">halo-font-size</td><td class="def">13</td><td class="desc">Base UI font size.</td></tr>
               <tr><td class="k">halo-divider-width</td><td class="def">8</td><td class="desc">Split-divider grab width.</td></tr>
+              <tr><td class="k">halo-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
+              <tr><td class="k">halo-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>switcher</code>, <code>detach</code>, <code>kill</code>.</td></tr>
+              <tr><td class="k">halo-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Halo quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
             </tbody>
           </table>
         </section>
@@ -88,7 +93,37 @@
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>⏎</kbd></span><span class="kd">Open a browser pane</span></div>
             <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>,</kbd></span><span class="kd">Settings</span></div>
             <div class="row"><span class="ks"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>F</kbd></span><span class="kd">Full screen</span></div>
+            <div class="row"><span class="ks"><kbd>⌘</kbd><kbd>K</kbd></span><span class="kd">Session switcher (fuzzy, across all windows; <kbd>⌘</kbd><kbd>⏎</kbd> on a row mirrors that session into a new pane)</span></div>
           </div>
+
+          <h3>Prefix mode</h3>
+          <p>With <code>halo-prefix</code> set (default <kbd>⌃B</kbd>), press the prefix then a key:</p>
+          <div class="keys">
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>%</kbd></span><span class="kd">Split vertically</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>"</kbd></span><span class="kd">Split horizontally</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>H</kbd><kbd>J</kbd><kbd>K</kbd><kbd>L</kbd></span><span class="kd">Focus pane (or arrows)</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>Z</kbd></span><span class="kd">Zoom pane</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>C</kbd></span><span class="kd">New session</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>N</kbd> <kbd>P</kbd></span><span class="kd">Next / previous session</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>,</kbd></span><span class="kd">Rename session</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>S</kbd></span><span class="kd">Session switcher</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>D</kbd></span><span class="kd">Detach pane (shell keeps running)</span></div>
+            <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>X</kbd></span><span class="kd">Kill session</span></div>
+          </div>
+        </section>
+
+        <section id="sessions">
+          <h2>Sessions &amp; persistence</h2>
+          <p>Sessions run under a small background daemon (<code>halod</code>). Shells survive Halo
+            quitting or crashing and reattach on next launch with native scrollback restored. Long
+            scrollback spills to disk, so history is recovered even if the daemon restarts; inline
+            images replay across reattach.</p>
+          <p>Detached sessions never disappear — they show in the switcher (<kbd>⌘K</kbd>) so you
+            can jump back. Mirror a session live in two panes or windows by opening the switcher and
+            pressing <kbd>⌘⏎</kbd> on a row; both views show the same shell, and the grid follows
+            the focused view. Attach to a session on another machine with
+            <code>halo attach ssh://host</code> — helper binaries are deployed over scp
+            automatically when missing or outdated (SSH-forwarded unix socket, no TCP).</p>
         </section>
 
         <section id="cli">
@@ -117,6 +152,9 @@ halo <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">worktree &lt;branch&gt; [--base REF]</td><td class="desc">Open a git-worktree-isolated session.</td></tr>
               <tr><td class="k">browser [url|port]</td><td class="desc">Open an embedded browser pane.</td></tr>
               <tr><td class="k">reload</td><td class="desc">Re-read the config and apply it live.</td></tr>
+              <tr><td class="k">sessions</td><td class="desc">List daemon sessions (id, name, alive, attached count).</td></tr>
+              <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
+              <tr><td class="k">attach ssh://host[:port] [session]</td><td class="desc">Attach to a session on another machine; self-deploys helper binaries over scp when missing or outdated (SSH-forwarded unix socket; no TCP).</td></tr>
             </tbody>
           </table>
         </section>
