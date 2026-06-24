@@ -24,20 +24,34 @@
     <a href="https://github.com/notnaki/Halo">GitHub ↗</a>
   </footer>
   <script>
-    // landing shuffle: each letter flickers through Redaction grades for ~2s, then settles
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    // landing: letters spin through Redaction grades, then settle left-to-right (slot-machine feel)
+    (function () {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
       var grades = ["Redaction 10","Redaction 20","Redaction 35","Redaction 50","Redaction 70","Redaction 100"];
       var letters = document.querySelectorAll(".wordmark span");
-      var tick = setInterval(function () {
-        letters.forEach(function (el) {
-          el.style.fontFamily = '"' + grades[Math.floor(Math.random() * grades.length)] + '", Georgia, serif';
+      if (!letters.length) return;
+      function fam(g) { return '"' + g + '", Georgia, serif'; }
+
+      function run() {
+        var locked = [], step = 0;
+        var tick = setInterval(function () {
+          step++;
+          letters.forEach(function (el, i) {
+            if (locked[i]) return;
+            el.style.fontFamily = fam(grades[(step + i) % grades.length]); // sequential, not random
+          });
+        }, 90);
+        letters.forEach(function (el, i) {
+          setTimeout(function () { locked[i] = true; el.style.fontFamily = ""; }, 850 + i * 200);
         });
-      }, 70);
-      setTimeout(function () {
-        clearInterval(tick);
-        letters.forEach(function (el) { el.style.fontFamily = ""; }); // back to base Redaction (and hover still works)
-      }, 2000);
-    }
+        setTimeout(function () { clearInterval(tick); }, 850 + letters.length * 200);
+      }
+
+      // preload every grade first so the spin never flashes the Georgia fallback
+      if (document.fonts && document.fonts.load) {
+        Promise.all(grades.map(function (g) { return document.fonts.load('120px ' + JSON.stringify(g)); })).then(run, run);
+      } else { run(); }
+    })();
   </script>
 </body>
 </html>

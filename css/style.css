@@ -45,9 +45,12 @@ a:hover{ color:var(--accent); }
 }
 .wordmark{
   font-family:"Redaction", Georgia, serif; font-weight:400;
-  font-size:clamp(56px, 11vw, 132px); line-height:.9; letter-spacing:-.01em;
+  font-size:clamp(56px, 11vw, 132px); letter-spacing:-.01em;
   margin:0; color:#fafafa; cursor:default;
+  /* fixed box so swapping grades (different metrics) never reflows the hero */
+  line-height:1; height:1em; display:flex; align-items:center; justify-content:center;
 }
+.wordmark span{ display:inline-block; }
 /* the redaction.us gag: each character bleeds heavier as you hover it */
 .wordmark span:hover,
 .brand span:hover{ font-family:"Redaction 100", Georgia, serif; }
