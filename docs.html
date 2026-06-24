@@ -128,5 +128,39 @@ halo <span class="a">capture</span> --scrollback</pre>
     <span>Alpha · macOS only · built on libghostty</span>
     <a href="https://github.com/notnaki/Halo">GitHub ↗</a>
   </footer>
+  <script>
+    // hovering the top-left logo replays the slot-machine spin-and-settle
+    (function () {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var brand = document.querySelector(".brand");
+      var letters = brand && brand.querySelectorAll("span");
+      if (!letters || !letters.length) return;
+      var grades = ["Redaction 10","Redaction 20","Redaction 35","Redaction 50","Redaction 70","Redaction 100"];
+      function fam(g) { return '"' + g + '", Georgia, serif'; }
+      var busy = false;
+
+      function spin() {
+        if (busy) return;
+        busy = true;
+        var locked = [], step = 0;
+        var tick = setInterval(function () {
+          step++;
+          letters.forEach(function (el, i) {
+            if (locked[i]) return;
+            el.style.fontFamily = fam(grades[(step + i) % grades.length]);
+          });
+        }, 80);
+        letters.forEach(function (el, i) {
+          setTimeout(function () { locked[i] = true; el.style.fontFamily = ""; }, 550 + i * 150);
+        });
+        setTimeout(function () { clearInterval(tick); busy = false; }, 550 + letters.length * 150);
+      }
+
+      if (document.fonts && document.fonts.load) {
+        grades.forEach(function (g) { document.fonts.load('22px ' + JSON.stringify(g)); });
+      }
+      brand.addEventListener("mouseenter", spin);
+    })();
+  </script>
 </body>
 </html>
