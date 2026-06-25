@@ -153,6 +153,10 @@ halo <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">worktree &lt;branch&gt; [--base REF]</td><td class="desc">Open a git-worktree-isolated session.</td></tr>
               <tr><td class="k">browser [url|port]</td><td class="desc">Open an embedded browser pane.</td></tr>
               <tr><td class="k">reload</td><td class="desc">Re-read the config and apply it live.</td></tr>
+              <tr><td class="k">state</td><td class="desc">Dump every window → project → session → pane as JSON (names, cwds, paneIDs, active/live). The whole sidebar, for an agent.</td></tr>
+              <tr><td class="k">select &lt;project&gt; &lt;session&gt;</td><td class="desc">Switch the active window to a session (0-based indices).</td></tr>
+              <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active session.</td></tr>
+              <tr><td class="k">project new|rename|remove|color</td><td class="desc">Manage projects (<code>new [--name X]</code>, <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>).</td></tr>
               <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
             </tbody>
           </table>
