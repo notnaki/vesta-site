@@ -331,7 +331,8 @@ halo.<span class="a">set</span>(<span class="s">"accent"</span>,     <span class
             <code>init.lua</code> (or <code>plugin/init.lua</code>) runs at startup and registers its
             own commands, events, keybinds, and UI.</p>
 <pre><span class="c">-- ~/.config/halo/init.lua</span>
-halo.<span class="a">plugin</span>(<span class="s">"you/halo-statusbar"</span>)   <span class="c">-- github.com/you/halo-statusbar</span>
+halo.<span class="a">plugin</span>(<span class="s">"you/halo-statusbar"</span>)                       <span class="c">-- latest from github.com/you/halo-statusbar</span>
+halo.<span class="a">plugin</span>(<span class="s">"you/halo-fzf"</span>, { ref = <span class="s">"v1.2.0"</span>, priority = <span class="s">10</span> })   <span class="c">-- pinned + loads first</span>
 
 <span class="c">-- ~/.config/halo/plugins/git-hud/init.lua  (a complete drop-in plugin)</span>
 <span class="a">local</span> id
@@ -346,12 +347,30 @@ halo.<span class="a">timer</span>(<span class="s">2</span>, <span class="a">func
             <thead><tr><th>Manage</th><th>—</th></tr></thead>
             <tbody>
               <tr><td class="k">halo plugins</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
-              <tr><td class="k">halo plugins sync</td><td class="desc"><code>git pull</code> each one and reload.</td></tr>
+              <tr><td class="k">halo plugins sync</td><td class="desc">Update each plugin and reload — pinned plugins fetch + checkout their <code>ref</code>, the rest fast-forward.</td></tr>
               <tr><td class="k">halo plugins enable|disable &lt;name&gt;</td><td class="desc">Toggle a plugin (persisted) and reload. Also in <strong>Settings ▸ Plugins</strong>.</td></tr>
             </tbody>
           </table>
           <p>Disabling a plugin re-runs config cleanly, so a theme plugin's colors revert the moment
             you turn it off — no relaunch.</p>
+
+          <h4>Pinning, manifest &amp; lockfile</h4>
+          <p>Pass a table to <code>halo.plugin</code> to pin a <code>ref</code> (tag, branch, or commit)
+            and/or set a load <code>priority</code> (higher loads first; ties break by name). A plugin
+            can also self-describe with an optional <code>manifest.lua</code> — useful for drop-ins,
+            since they have no declaration. Declared options win over the manifest.</p>
+<pre><span class="c">-- a plugin's manifest.lua</span>
+<span class="a">return</span> { version = <span class="s">"1.2.0"</span>, priority = <span class="s">10</span> }</pre>
+          <p>Every load writes <code>~/.config/halo/plugins.lock</code> — the resolved commit, ref, and
+            version of each installed plugin — so an install is reproducible and you can see exactly
+            what's running. <code>halo plugins</code> shows it inline:</p>
+<pre>halo plugins
+<span class="c">→</span> halo-fzf      v1.2.0  @v1.2.0  (9283de5)
+<span class="c">→</span> halo-statusbar         (a1b2c3d)
+<span class="c">→</span> git-hud       <span class="c">-- drop-in, not a git repo</span></pre>
+          <p><code>halo.plugin</code> also accepts a full URL (<code>https://…</code>, <code>git@…</code>,
+            <code>file://…</code>) or an absolute path, not just <code>owner/repo</code> — handy for
+            private repos and local plugin development.</p>
         </section>
       </main>
     </div>
