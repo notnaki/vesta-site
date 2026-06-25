@@ -35,6 +35,12 @@
         <a href="#cli">Agent CLI</a>
         <div class="grp-t">Scripting</div>
         <a href="#lua">Lua scripting</a>
+        <a href="#lua-api">The halo API</a>
+        <a href="#lua-control">Read &amp; drive</a>
+        <a href="#lua-ui">Custom UI</a>
+        <a href="#lua-events">Events &amp; timers</a>
+        <a href="#lua-config">Config from Lua</a>
+        <a href="#lua-plugins">Plugins</a>
       </aside>
 
       <main class="doc">
@@ -52,7 +58,7 @@
             <tbody>
               <tr><td class="k">halo-projects</td><td class="def">—</td><td class="desc">Comma-separated project paths for the sidebar (<code>~/a, ~/b</code>).</td></tr>
               <tr><td class="k">halo-accent</td><td class="def">theme accent</td><td class="desc">Selection, focus ring, and active-session color.</td></tr>
-              <tr><td class="k">halo-surface</td><td class="def">ghostty background</td><td class="desc">Window + pane background override.</td></tr>
+              <tr><td class="k">halo-surface</td><td class="def">ghostty background</td><td class="desc">Chrome surface — sidebar, titlebar, gaps. For the terminal background itself, set the ghostty <code>background</code> key (Settings ▸ Terminal bg). Set both to the same value for a seamless window.</td></tr>
               <tr><td class="k">halo-sidebar-width</td><td class="def">224</td><td class="desc">Sidebar width, in points.</td></tr>
               <tr><td class="k">halo-font-family</td><td class="def">GeistMono</td><td class="desc">Sidebar / UI text family.</td></tr>
               <tr><td class="k">halo-font-mono</td><td class="def">MartianMono</td><td class="desc">Instrument-label family (uppercase chips).</td></tr>
@@ -157,10 +163,16 @@ halo <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">browser [url|port]</td><td class="desc">Open an embedded browser pane.</td></tr>
               <tr><td class="k">reload</td><td class="desc">Re-read the config and apply it live.</td></tr>
               <tr><td class="k">state</td><td class="desc">Dump every window → project → session → pane as JSON (names, cwds, paneIDs, active/live). The whole sidebar, for an agent.</td></tr>
+              <tr><td class="k">sessions</td><td class="desc">Readable list of projects → sessions, with the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>.</td></tr>
               <tr><td class="k">select &lt;project&gt; &lt;session&gt;</td><td class="desc">Switch the active window to a session (0-based indices).</td></tr>
               <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active session.</td></tr>
               <tr><td class="k">project new|rename|remove|color</td><td class="desc">Manage projects (<code>new [--name X]</code>, <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>).</td></tr>
               <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
+              <tr><td class="k">notify &lt;msg&gt;</td><td class="desc">Show a toast in the active window — handy for agents signalling a human.</td></tr>
+              <tr><td class="k">run &lt;name&gt;</td><td class="desc">Run a command registered with <code>halo.command(name, fn)</code> in Lua.</td></tr>
+              <tr><td class="k">plugins [list]</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
+              <tr><td class="k">plugins sync</td><td class="desc"><code>git pull</code> every plugin and reload.</td></tr>
+              <tr><td class="k">plugins enable|disable &lt;name&gt;</td><td class="desc">Turn a plugin on/off (persisted) and reload. Also in Settings ▸ Plugins.</td></tr>
             </tbody>
           </table>
         </section>
@@ -169,7 +181,9 @@ halo <span class="a">capture</span> --scrollback</pre>
           <h2>Lua scripting</h2>
           <p>Halo embeds <strong>Lua 5.4</strong>. On launch (and on <code>halo reload</code>) it runs
             <code>~/.config/halo/init.lua</code> with a global <code>halo</code> table. A script error
-            is shown as a toast — it never crashes the app.</p>
+            is shown as a toast — it never crashes the app. Everything the
+            <a href="#cli">control CLI</a> can do is reachable from Lua, plus UI you can't get from
+            the CLI: floating panels, pickers, prompts, a statusline, and live config.</p>
 <pre><span class="c">-- ~/.config/halo/init.lua</span>
 
 <span class="c">-- toast when a command/agent turn finishes in any session</span>
@@ -184,39 +198,160 @@ halo.<span class="a">command</span>(<span class="s">"tests"</span>, <span class=
   halo.notify(<span class="s">"running tests in "</span>..p.cwd)
   halo.send(<span class="s">"npm test\n"</span>)
 <span class="a">end</span>)</pre>
+
+          <h3 id="lua-api">The <code>halo</code> API</h3>
+          <p>Register handlers (these persist across the script):</p>
           <table class="tbl">
             <thead><tr><th>API</th><th>What it does</th></tr></thead>
             <tbody>
-              <tr><td class="k">halo.notify(msg)</td><td class="desc">Show a toast banner in the active window.</td></tr>
-              <tr><td class="k">halo.command(name, fn)</td><td class="desc">Register a command, runnable via <code>halo run &lt;name&gt;</code> or a keybind.</td></tr>
-              <tr><td class="k">halo.bind(chord, fn)</td><td class="desc">Bind a key chord (e.g. <code>"cmd+shift+p"</code>, <code>"ctrl+g"</code>) to a Lua function.</td></tr>
-              <tr><td class="k">halo.on(event, fn)</td><td class="desc">Run <code>fn</code> on an event (below). The handler gets the session's paneID where relevant.</td></tr>
-              <tr><td class="k">halo.send(text)</td><td class="desc">Type text into the focused pane (include <code>"\n"</code> to run it).</td></tr>
-              <tr><td class="k">halo.active()</td><td class="desc">Table for the focused session: <code>{cwd, title, paneID}</code>.</td></tr>
+              <tr><td class="k">halo.command(name, fn)</td><td class="desc">Register a command, runnable via <code>halo run &lt;name&gt;</code> or from a keybind.</td></tr>
+              <tr><td class="k">halo.bind(chord, fn)</td><td class="desc">Bind a key chord (<code>"cmd+shift+p"</code>, <code>"ctrl+g"</code>, …) to a function.</td></tr>
+              <tr><td class="k">halo.on(event, fn)</td><td class="desc">Run <code>fn</code> on an <a href="#lua-events">event</a>; the handler gets the relevant paneID.</td></tr>
+              <tr><td class="k">halo.timer(seconds, fn)</td><td class="desc">Call <code>fn</code> every <code>seconds</code> (repeating). Cleared on reload.</td></tr>
+              <tr><td class="k">halo.plugin("owner/repo")</td><td class="desc">Declare a plugin; cloned from GitHub on first launch. See <a href="#lua-plugins">Plugins</a>.</td></tr>
             </tbody>
           </table>
-          <h3>Events</h3>
+          <p>Read &amp; drive the terminal (see <a href="#lua-control">below</a>):</p>
+          <table class="tbl">
+            <tbody>
+              <tr><td class="k">halo.active()</td><td class="desc">Focused session: <code>{cwd, title, paneID}</code> (or <code>nil</code>).</td></tr>
+              <tr><td class="k">halo.state()</td><td class="desc">Full tree: <code>{projects = {{name, path, sessions = {…}}, …}}</code>.</td></tr>
+              <tr><td class="k">halo.capture([scrollback])</td><td class="desc">Focused pane's text as a string; pass <code>true</code> to include scrollback.</td></tr>
+              <tr><td class="k">halo.send(text)</td><td class="desc">Type into the focused pane (include <code>"\n"</code> to run).</td></tr>
+              <tr><td class="k">halo.cmd(verb, …)</td><td class="desc">Run any <a href="#cli">CLI verb</a>; returns its result table.</td></tr>
+              <tr><td class="k">halo.split([h]) · halo.tab(a) · halo.select(p, s)</td><td class="desc">Split (<code>true</code> = horizontal); <code>tab</code> = <code>"new"/"next"/"prev"/"close"</code>; switch session.</td></tr>
+              <tr><td class="k">halo.open(path) · halo.zoom() · halo.browser([url]) · halo.focus([id])</td><td class="desc">Open a session at a path; zoom the pane; open a browser pane; focus/cycle panes.</td></tr>
+            </tbody>
+          </table>
+          <p>Build UI (see <a href="#lua-ui">below</a>):</p>
+          <table class="tbl">
+            <tbody>
+              <tr><td class="k">halo.notify(msg)</td><td class="desc">Toast banner in the active window.</td></tr>
+              <tr><td class="k">halo.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id.</td></tr>
+              <tr><td class="k">halo.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
+              <tr><td class="k">halo.prompt(msg, fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit.</td></tr>
+              <tr><td class="k">halo.pick(items, fn)</td><td class="desc">Filterable list; <code>fn(choice)</code> on select.</td></tr>
+              <tr><td class="k">halo.status(text)</td><td class="desc">Set the sidebar-footer statusline text.</td></tr>
+              <tr><td class="k">halo.set(key, value)</td><td class="desc">Override a config key from Lua (Lua wins). See <a href="#lua-config">Config from Lua</a>.</td></tr>
+            </tbody>
+          </table>
+
+          <h3 id="lua-control">Reading &amp; driving the terminal</h3>
+          <p><code>halo.cmd(verb, ...)</code> runs any control verb and returns its result as a table;
+            the named helpers (<code>capture</code>, <code>state</code>, <code>split</code>, …) wrap the
+            common ones. This is how a Lua command inspects output and reacts — the same surface an
+            external agent gets, in-process.</p>
+<pre><span class="c">-- watch a build; toast pass/fail by scanning the pane after each turn</span>
+halo.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span class="a">function</span>()
+  <span class="a">local</span> out = halo.<span class="a">capture</span>()          <span class="c">-- visible text; capture(true) for scrollback</span>
+  <span class="a">if</span> out:<span class="a">find</span>(<span class="s">"FAIL"</span>) <span class="a">then</span> halo.notify(<span class="s">"❌ tests failed"</span>)
+  <span class="a">elseif</span> out:<span class="a">find</span>(<span class="s">"PASS"</span>) <span class="a">then</span> halo.notify(<span class="s">"✅ green"</span>) <span class="a">end</span>
+<span class="a">end</span>)
+
+<span class="c">-- count sessions across the whole sidebar</span>
+<span class="a">local</span> n = <span class="s">0</span>
+<span class="a">for</span> _, p <span class="a">in</span> <span class="a">ipairs</span>(halo.<span class="a">state</span>().projects) <span class="a">do</span> n = n + #p.sessions <span class="a">end</span>
+
+<span class="c">-- open a worktree, split, run, read back — via raw cmd()</span>
+halo.<span class="a">cmd</span>(<span class="s">"worktree"</span>, <span class="s">"fix/login"</span>)
+halo.<span class="a">split</span>(<span class="a">true</span>)
+halo.<span class="a">send</span>(<span class="s">"npm test\n"</span>)</pre>
+
+          <h3 id="lua-ui">Custom UI: panels, prompts, pickers, statusline</h3>
+          <p>A <strong>panel</strong> is a floating, titled box pinned to a corner. <code>lines</code> is a
+            list where each entry is either a plain string or a table
+            <code>{text=, color="#hex", click=function() … end}</code> — a line with a
+            <code>click</code> renders as a button. Pass an existing <code>id</code> in
+            <code>opts</code> to update a panel in place (e.g. from a timer) instead of stacking a new one.</p>
+          <table class="tbl">
+            <thead><tr><th>panel opts</th><th>—</th></tr></thead>
+            <tbody>
+              <tr><td class="k">title</td><td class="desc">Header text.</td></tr>
+              <tr><td class="k">corner</td><td class="desc"><code>"topright"</code> (default), <code>"topleft"</code>, <code>"bottomright"</code>, <code>"bottomleft"</code>.</td></tr>
+              <tr><td class="k">bg</td><td class="desc">Background hex, e.g. <code>"#1a1b26"</code>.</td></tr>
+              <tr><td class="k">width</td><td class="desc">Fixed width in points.</td></tr>
+              <tr><td class="k">window</td><td class="desc"><code>"active"</code> (default) — lives in the focused window and follows focus; <code>"all"</code> — shows in every window, including new ones.</td></tr>
+              <tr><td class="k">id</td><td class="desc">Pass a returned id to update that panel instead of creating one.</td></tr>
+            </tbody>
+          </table>
+<pre><span class="c">-- a live clock that updates in place, in whichever window has focus</span>
+<span class="a">local</span> clock
+halo.<span class="a">timer</span>(<span class="s">1</span>, <span class="a">function</span>()
+  clock = halo.<span class="a">panel</span>({
+    { text = <span class="a">os.date</span>(<span class="s">"%H:%M:%S"</span>), color = <span class="s">"#e0af68"</span> },
+  }, { title = <span class="s">"clock"</span>, corner = <span class="s">"topright"</span>, window = <span class="s">"active"</span>, id = clock })
+<span class="a">end</span>)
+
+<span class="c">-- a button menu shown in EVERY window (click runs the function)</span>
+halo.<span class="a">panel</span>({
+  { text = <span class="s">"▶ split"</span>,   color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() halo.<span class="a">split</span>() <span class="a">end</span> },
+  { text = <span class="s">"＋ new tab"</span>, color = <span class="s">"#7aa2f7"</span>, click = <span class="a">function</span>() halo.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
+}, { title = <span class="s">"actions"</span>, corner = <span class="s">"bottomright"</span>, bg = <span class="s">"#16161e"</span>, window = <span class="s">"all"</span> })
+
+<span class="c">-- prompt for text, then run it; or pick from a list</span>
+halo.<span class="a">bind</span>(<span class="s">"cmd+shift+p"</span>, <span class="a">function</span>()
+  halo.<span class="a">prompt</span>(<span class="s">"Run:"</span>, <span class="a">function</span>(cmd) <span class="a">if</span> cmd ~= <span class="s">""</span> <span class="a">then</span> halo.send(cmd..<span class="s">"\n"</span>) <span class="a">end</span> <span class="a">end</span>)
+<span class="a">end</span>)
+halo.<span class="a">pick</span>({ <span class="s">"git status"</span>, <span class="s">"npm test"</span>, <span class="s">"clear"</span> }, <span class="a">function</span>(c) halo.send(c..<span class="s">"\n"</span>) <span class="a">end</span>)
+
+halo.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a">os.date</span>(<span class="s">"%H:%M"</span>))   <span class="c">-- sidebar-footer statusline</span></pre>
+          <p>Panels pass clicks through to the terminal underneath except on buttons, so a corner
+            HUD never gets in your way. Non-active-window copies of an <code>"active"</code> panel
+            simply disappear until that window is focused again.</p>
+
+          <h3 id="lua-events">Events &amp; timers</h3>
+          <p><code>halo.on(event, fn)</code> subscribes; <code>halo.timer(seconds, fn)</code> polls.
+            Handlers receive the relevant <code>paneID</code> where it applies.</p>
           <div class="keys">
             <div class="row"><span class="ks"><code>session-opened</code></span><span class="kd">A session/tab was created (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>session-closed</code></span><span class="kd">A session was closed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>focus-changed</code></span><span class="kd">The active session changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>command-finished</code></span><span class="kd">A foreground command/agent turn returned to the shell (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>dir-changed</code></span><span class="kd">The focused pane's working directory changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>config-reloaded</code></span><span class="kd">init.lua (re)loaded — fires once after load and on every <code>halo reload</code>.</span></div>
           </div>
 
-          <h3>Plugins</h3>
-          <p>Plugins are Lua packages that use the same <code>halo</code> API. Declare them in
-            <code>init.lua</code> and Halo clones them into <code>~/.config/halo/plugins/</code> on
-            first launch; or just drop a folder there yourself. Each plugin's <code>init.lua</code>
-            (or <code>plugin/init.lua</code>) runs at startup and registers its own commands,
-            events, and keybinds.</p>
+          <h3 id="lua-config">Config from Lua</h3>
+          <p><code>halo.set(key, value)</code> sets a config key from your script. Short chrome names
+            (<code>accent</code>, <code>surface</code>, <code>font-family</code>,
+            <code>sidebar-width</code>, <code>font-size</code>, <code>divider-width</code>) get the
+            <code>halo-</code> prefix; any other key is treated as a raw
+            <a href="#ghostty">Ghostty key</a> (e.g. <code>background</code>) and reaches libghostty.
+            <strong>Lua wins</strong> over the config file and the Settings UI — a key set here shows
+            as locked with a “set by init.lua” badge in Settings.</p>
+<pre><span class="c">-- a dark theme as a script: chrome + terminal share one background</span>
+halo.<span class="a">set</span>(<span class="s">"background"</span>, <span class="s">"#0a0b0f"</span>)   <span class="c">-- ghostty terminal bg</span>
+halo.<span class="a">set</span>(<span class="s">"surface"</span>,    <span class="s">"#0a0b0f"</span>)   <span class="c">-- halo chrome → halo-surface</span>
+halo.<span class="a">set</span>(<span class="s">"accent"</span>,     <span class="s">"#ff3366"</span>)   <span class="c">-- → halo-accent</span></pre>
+
+          <h3 id="lua-plugins">Plugins</h3>
+          <p>A plugin is just Lua using the same <code>halo</code> API. Declare one in
+            <code>init.lua</code> and Halo clones it into <code>~/.config/halo/plugins/&lt;name&gt;/</code>
+            on first launch; or drop a folder there yourself — no declaration needed. Each plugin's
+            <code>init.lua</code> (or <code>plugin/init.lua</code>) runs at startup and registers its
+            own commands, events, keybinds, and UI.</p>
 <pre><span class="c">-- ~/.config/halo/init.lua</span>
 halo.<span class="a">plugin</span>(<span class="s">"you/halo-statusbar"</span>)   <span class="c">-- github.com/you/halo-statusbar</span>
-halo.<span class="a">plugin</span>(<span class="s">"you/halo-fzf"</span>)</pre>
-          <p>Manage them from the CLI: <code>halo plugins</code> lists what's installed, and
-            <code>halo plugins sync</code> <code>git pull</code>s each one and reloads. A drop-in
-            folder needs no declaration — <code>~/.config/halo/plugins/my-thing/init.lua</code> just
-            works.</p>
+
+<span class="c">-- ~/.config/halo/plugins/git-hud/init.lua  (a complete drop-in plugin)</span>
+<span class="a">local</span> id
+halo.<span class="a">timer</span>(<span class="s">2</span>, <span class="a">function</span>()
+  <span class="a">local</span> a = halo.<span class="a">active</span>(); <span class="a">if</span> <span class="a">not</span> a <span class="a">then</span> <span class="a">return</span> <span class="a">end</span>
+  id = halo.<span class="a">panel</span>({
+    { text = a.cwd, color = <span class="s">"#7dcfff"</span> },
+    { text = <span class="s">"⟳ fetch"</span>, color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() halo.send(<span class="s">"git fetch\n"</span>) <span class="a">end</span> },
+  }, { title = <span class="s">"git"</span>, corner = <span class="s">"topleft"</span>, window = <span class="s">"all"</span>, id = id })
+<span class="a">end</span>)</pre>
+          <table class="tbl">
+            <thead><tr><th>Manage</th><th>—</th></tr></thead>
+            <tbody>
+              <tr><td class="k">halo plugins</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
+              <tr><td class="k">halo plugins sync</td><td class="desc"><code>git pull</code> each one and reload.</td></tr>
+              <tr><td class="k">halo plugins enable|disable &lt;name&gt;</td><td class="desc">Toggle a plugin (persisted) and reload. Also in <strong>Settings ▸ Plugins</strong>.</td></tr>
+            </tbody>
+          </table>
+          <p>Disabling a plugin re-runs config cleanly, so a theme plugin's colors revert the moment
+            you turn it off — no relaunch.</p>
         </section>
       </main>
     </div>
