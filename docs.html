@@ -166,7 +166,7 @@ halo <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">sessions</td><td class="desc">Readable list of projects → sessions, with the active one marked <code>▸</code> — the human/agent-friendly view of <code>state</code>.</td></tr>
               <tr><td class="k">select &lt;project&gt; &lt;session&gt;</td><td class="desc">Switch the active window to a session (0-based indices).</td></tr>
               <tr><td class="k">rename &lt;name&gt;</td><td class="desc">Rename the active session.</td></tr>
-              <tr><td class="k">project new|rename|remove|color</td><td class="desc">Manage projects (<code>new [PATH] [--name X]</code> — PATH or the dir you ran it from; <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>). The sidebar <strong>+</strong> opens a folder picker.</td></tr>
+              <tr><td class="k">project new|dir|rename|remove|color</td><td class="desc">Manage projects: <code>new [PATH] [--name X]</code> and <code>dir [PATH]</code> take a path or the dir you ran it from; also <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>. New sessions open in the project's <code>dir</code>; the sidebar <strong>+</strong> and the titlebar folder icon open a folder picker.</td></tr>
               <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
               <tr><td class="k">notify &lt;msg&gt;</td><td class="desc">Show a toast in the active window — handy for agents signalling a human.</td></tr>
               <tr><td class="k">run &lt;name&gt;</td><td class="desc">Run a command registered with <code>halo.command(name, fn)</code> in Lua.</td></tr>
