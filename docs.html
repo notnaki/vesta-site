@@ -125,8 +125,8 @@
           <h2>Sessions &amp; persistence</h2>
           <p>Sessions run under a small background daemon (<code>vestad</code>). Shells survive Vesta
             quitting or crashing — and survive closing a window — then reattach on next launch with
-            native scrollback restored. Long scrollback spills to disk, so history is recovered even
-            if the daemon restarts; inline images replay across reattach.</p>
+            native scrollback restored. With <code>vesta-persist-scrollback</code> enabled, scrollback
+            also mirrors to disk so it survives a daemon restart (off by default).</p>
           <p>The sidebar is the single source of truth: every session lives there. Closing a window
             just closes a <em>view</em> — the sessions stay alive and reopen with the window. Closing
             a session (its last pane) kills its shell, so there are no hidden orphans.</p>
@@ -326,8 +326,8 @@ vesta.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="
           </div>
           <p>Plugins are sandboxed: a callback that errors repeatedly auto-disables its plugin
             (<code>vesta plugins enable &lt;name&gt;</code> to restore), and an infinite loop in a
-            callback is aborted rather than freezing the UI. Scrollback is persisted to disk, so a
-            pane's history survives a daemon restart.</p>
+            callback is aborted rather than freezing the UI. With <code>vesta-persist-scrollback</code>
+            enabled, a pane's history also survives a daemon restart (off by default).</p>
 
           <h3 id="lua-config">Config from Lua</h3>
           <p><code>vesta.set(key, value)</code> sets a config key from your script. Short chrome names
