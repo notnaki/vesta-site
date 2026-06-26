@@ -227,10 +227,13 @@ halo.<span class="a">command</span>(<span class="s">"tests"</span>, <span class=
           <table class="tbl">
             <tbody>
               <tr><td class="k">halo.notify(msg)</td><td class="desc">Toast banner in the active window.</td></tr>
-              <tr><td class="k">halo.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id.</td></tr>
+              <tr><td class="k">halo.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id. Lines can be labels, clickable buttons, or editable fields (<code>{input=true, placeholder=, action=fn}</code>).</td></tr>
               <tr><td class="k">halo.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
-              <tr><td class="k">halo.prompt(msg, fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit.</td></tr>
-              <tr><td class="k">halo.pick(items, fn)</td><td class="desc">Filterable list; <code>fn(choice)</code> on select.</td></tr>
+              <tr><td class="k">halo.prompt(msg [, default], fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit. Optional pre-filled <code>default</code>.</td></tr>
+              <tr><td class="k">halo.confirm(msg, fn)</td><td class="desc">Yes/No dialog; <code>fn(true|false)</code>.</td></tr>
+              <tr><td class="k">halo.pick(items, fn)</td><td class="desc">Filterable list; <code>fn(label)</code>. Items are strings or <code>{label, desc}</code>.</td></tr>
+              <tr><td class="k">halo.pickmulti(items, fn)</td><td class="desc">Multi-select (Tab marks); <code>fn(table_of_labels)</code>.</td></tr>
+              <tr><td class="k">halo.menu(items)</td><td class="desc">Action list; each <code>{text, desc, action=fn}</code> runs its own action on select.</td></tr>
               <tr><td class="k">halo.status(text)</td><td class="desc">Set the sidebar-footer statusline text.</td></tr>
               <tr><td class="k">halo.set(key, value)</td><td class="desc">Override a config key from Lua (Lua wins). See <a href="#lua-config">Config from Lua</a>.</td></tr>
             </tbody>
@@ -259,9 +262,10 @@ halo.<span class="a">send</span>(<span class="s">"npm test\n"</span>)</pre>
 
           <h3 id="lua-ui">Custom UI: panels, prompts, pickers, statusline</h3>
           <p>A <strong>panel</strong> is a floating, titled box pinned to a corner. <code>lines</code> is a
-            list where each entry is either a plain string or a table
-            <code>{text=, color="#hex", click=function() … end}</code> — a line with a
-            <code>click</code> renders as a button. Pass an existing <code>id</code> in
+            list where each entry is one of: a plain string or <code>{text=, color="#hex"}</code> — a
+            label; <code>{text=, color=, click=function() … end}</code> — a button; or
+            <code>{input=true, placeholder=, action=function(text) … end}</code> — an editable field
+            whose <code>action</code> fires on Enter. Pass an existing <code>id</code> in
             <code>opts</code> to update a panel in place (e.g. from a timer) instead of stacking a new one.</p>
           <table class="tbl">
             <thead><tr><th>panel opts</th><th>—</th></tr></thead>
@@ -294,6 +298,12 @@ halo.<span class="a">bind</span>(<span class="s">"cmd+shift+p"</span>, <span cla
 <span class="a">end</span>)
 halo.<span class="a">pick</span>({ <span class="s">"git status"</span>, <span class="s">"npm test"</span>, <span class="s">"clear"</span> }, <span class="a">function</span>(c) halo.send(c..<span class="s">"\n"</span>) <span class="a">end</span>)
 
+<span class="c">-- a command palette: each item runs its own action</span>
+halo.<span class="a">menu</span>({
+  { text = <span class="s">"split"</span>,   desc = <span class="s">"vertical"</span>, action = <span class="a">function</span>() halo.<span class="a">split</span>() <span class="a">end</span> },
+  { text = <span class="s">"new tab"</span>, action = <span class="a">function</span>() halo.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
+})
+
 halo.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a">os.date</span>(<span class="s">"%H:%M"</span>))   <span class="c">-- sidebar-footer statusline</span></pre>
           <p>Panels pass clicks through to the terminal underneath except on buttons, so a corner
             HUD never gets in your way. Non-active-window copies of an <code>"active"</code> panel
@@ -304,12 +314,18 @@ halo.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a
             Handlers receive the relevant <code>paneID</code> where it applies.</p>
           <div class="keys">
             <div class="row"><span class="ks"><code>session-opened</code></span><span class="kd">A session/tab was created (arg: paneID).</span></div>
-            <div class="row"><span class="ks"><code>session-closed</code></span><span class="kd">A session was closed (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>session-closed</code></span><span class="kd">The user closed a session (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>session-exited</code></span><span class="kd">A shell exited on its own, vs. being closed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>focus-changed</code></span><span class="kd">The active session changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>command-finished</code></span><span class="kd">A foreground command/agent turn returned to the shell (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>dir-changed</code></span><span class="kd">The focused pane's working directory changed (arg: paneID).</span></div>
+            <div class="row"><span class="ks"><code>pane-output</code></span><span class="kd">Raw output bytes from any live pane: <code>fn(paneID, chunk)</code>. Best-effort/coalesced; persist mode only. Use <code>chunk:find(s, 1, true)</code>.</span></div>
             <div class="row"><span class="ks"><code>config-reloaded</code></span><span class="kd">init.lua (re)loaded — fires once after load and on every <code>halo reload</code>.</span></div>
           </div>
+          <p>Plugins are sandboxed: a callback that errors repeatedly auto-disables its plugin
+            (<code>halo plugins enable &lt;name&gt;</code> to restore), and an infinite loop in a
+            callback is aborted rather than freezing the UI. Scrollback is persisted to disk, so a
+            pane's history survives a daemon restart.</p>
 
           <h3 id="lua-config">Config from Lua</h3>
           <p><code>halo.set(key, value)</code> sets a config key from your script. Short chrome names
