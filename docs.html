@@ -231,9 +231,10 @@ halo.<span class="a">command</span>(<span class="s">"tests"</span>, <span class=
               <tr><td class="k">halo.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
               <tr><td class="k">halo.prompt(msg [, default], fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit. Optional pre-filled <code>default</code>.</td></tr>
               <tr><td class="k">halo.confirm(msg, fn)</td><td class="desc">Yes/No dialog; <code>fn(true|false)</code>.</td></tr>
-              <tr><td class="k">halo.pick(items, fn)</td><td class="desc">Filterable list; <code>fn(label)</code>. Items are strings or <code>{label, desc}</code>.</td></tr>
-              <tr><td class="k">halo.pickmulti(items, fn)</td><td class="desc">Multi-select (Tab marks); <code>fn(table_of_labels)</code>.</td></tr>
-              <tr><td class="k">halo.menu(items)</td><td class="desc">Action list; each <code>{text, desc, action=fn}</code> runs its own action on select.</td></tr>
+              <tr><td class="k">halo.pick(items, fn [, opts])</td><td class="desc">Filterable list; <code>fn(label)</code>. Items are strings or <code>{label, desc}</code>. Hugs content by default.</td></tr>
+              <tr><td class="k">halo.pickmulti(items, fn [, opts])</td><td class="desc">Multi-select (Tab marks); <code>fn(table_of_labels)</code>.</td></tr>
+              <tr><td class="k">halo.menu(items [, opts])</td><td class="desc">Action list; each <code>{text, desc, action=fn}</code> runs its own action on select.</td></tr>
+              <tr><td class="k" colspan="2" style="color:var(--dim)">picker <code>opts</code> (optional): <code>{width, height, maxrows, maxheight}</code> — default hugs content + scrolls; <code>height</code> forces a fixed-tall panel, <code>maxrows</code>/<code>maxheight</code> set the scroll threshold.</td></tr>
               <tr><td class="k">halo.status(text)</td><td class="desc">Set the sidebar-footer statusline text.</td></tr>
               <tr><td class="k">halo.set(key, value)</td><td class="desc">Override a config key from Lua (Lua wins). See <a href="#lua-config">Config from Lua</a>.</td></tr>
             </tbody>
