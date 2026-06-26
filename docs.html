@@ -3,21 +3,21 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Halo — Docs</title>
-<meta name="description" content="Halo documentation: config keys, keybindings, and the agent-control CLI.">
+<title>Vesta — Docs</title>
+<meta name="description" content="Vesta documentation: config keys, keybindings, and the agent-control CLI.">
 <link rel="icon" href="assets/favicon.png">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="nav">
     <div class="wrap">
-      <a class="brand" href="index.html"><img src="assets/halo-mark.png" alt="">Halo</a>
+      <a class="brand" href="index.html"><img src="assets/vesta-mark.png" alt="">Vesta</a>
       <span class="spacer"></span>
       <a class="lnk" href="#config">config</a>
       <a class="lnk" href="#keys">keys</a>
       <a class="lnk" href="#cli">cli</a>
       <a class="lnk" href="#lua">lua</a>
-      <a class="ghbtn" href="https://github.com/notnaki/Halo">GitHub ↗</a>
+      <a class="ghbtn" href="https://github.com/notnaki/Vesta">GitHub ↗</a>
     </div>
   </header>
 
@@ -25,7 +25,7 @@
     <div class="docs">
       <aside class="toc">
         <div class="grp-t">Config</div>
-        <a href="#config">Halo keys</a>
+        <a href="#config">Vesta keys</a>
         <a href="#ghostty">Ghostty keys</a>
         <div class="grp-t">Keys</div>
         <a href="#keys">Keybindings</a>
@@ -35,7 +35,7 @@
         <a href="#cli">Agent CLI</a>
         <div class="grp-t">Scripting</div>
         <a href="#lua">Lua scripting</a>
-        <a href="#lua-api">The halo API</a>
+        <a href="#lua-api">The vesta API</a>
         <a href="#lua-control">Read &amp; drive</a>
         <a href="#lua-ui">Custom UI</a>
         <a href="#lua-events">Events &amp; timers</a>
@@ -45,29 +45,29 @@
 
       <main class="doc">
         <h1>Docs</h1>
-        <p class="sub">Halo reads your real Ghostty config, so any Ghostty option works — plus a
-          handful of <code>halo-</code> keys for the chrome. Drive it from scripts and agents
+        <p class="sub">Vesta reads your real Ghostty config, so any Ghostty option works — plus a
+          handful of <code>vesta-</code> keys for the chrome. Drive it from scripts and agents
           over a local control socket.</p>
 
         <section id="config">
-          <h2>Halo config keys</h2>
-          <p>Put these in your Ghostty config (or Halo's own config after Settings ▸ Import).
-            libghostty ignores the <code>halo-</code> prefix, so they pass straight through.</p>
+          <h2>Vesta config keys</h2>
+          <p>Put these in your Ghostty config (or Vesta's own config after Settings ▸ Import).
+            libghostty ignores the <code>vesta-</code> prefix, so they pass straight through.</p>
           <table class="tbl">
             <thead><tr><th>Key</th><th>Default</th><th>What it does</th></tr></thead>
             <tbody>
-              <tr><td class="k">halo-projects</td><td class="def">—</td><td class="desc">Comma-separated project paths for the sidebar (<code>~/a, ~/b</code>).</td></tr>
-              <tr><td class="k">halo-accent</td><td class="def">theme accent</td><td class="desc">Selection, focus ring, and active-session color.</td></tr>
-              <tr><td class="k">halo-surface</td><td class="def">ghostty background</td><td class="desc">Chrome surface — sidebar, titlebar, gaps. For the terminal background itself, set the ghostty <code>background</code> key (Settings ▸ Terminal bg). Set both to the same value for a seamless window.</td></tr>
-              <tr><td class="k">halo-sidebar-width</td><td class="def">224</td><td class="desc">Sidebar width, in points.</td></tr>
-              <tr><td class="k">halo-font-family</td><td class="def">GeistMono</td><td class="desc">Sidebar / UI text family.</td></tr>
-              <tr><td class="k">halo-font-mono</td><td class="def">MartianMono</td><td class="desc">Instrument-label family (uppercase chips).</td></tr>
-              <tr><td class="k">halo-font-size</td><td class="def">13</td><td class="desc">Base UI font size.</td></tr>
-              <tr><td class="k">halo-divider-width</td><td class="def">8</td><td class="desc">Split-divider grab width.</td></tr>
-              <tr><td class="k">halo-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
-              <tr><td class="k">halo-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>detach</code>, <code>kill</code>.</td></tr>
-              <tr><td class="k">halo-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Halo quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
-              <tr><td class="k">halo-persist-scrollback</td><td class="def">off</td><td class="desc">Mirror scrollback to disk so it survives a daemon restart. <strong>Off by default</strong> — terminal output can contain passwords/tokens; enable only if you accept on-disk persistence.</td></tr>
+              <tr><td class="k">vesta-projects</td><td class="def">—</td><td class="desc">Comma-separated project paths for the sidebar (<code>~/a, ~/b</code>).</td></tr>
+              <tr><td class="k">vesta-accent</td><td class="def">theme accent</td><td class="desc">Selection, focus ring, and active-session color.</td></tr>
+              <tr><td class="k">vesta-surface</td><td class="def">ghostty background</td><td class="desc">Chrome surface — sidebar, titlebar, gaps. For the terminal background itself, set the ghostty <code>background</code> key (Settings ▸ Terminal bg). Set both to the same value for a seamless window.</td></tr>
+              <tr><td class="k">vesta-sidebar-width</td><td class="def">224</td><td class="desc">Sidebar width, in points.</td></tr>
+              <tr><td class="k">vesta-font-family</td><td class="def">GeistMono</td><td class="desc">Sidebar / UI text family.</td></tr>
+              <tr><td class="k">vesta-font-mono</td><td class="def">MartianMono</td><td class="desc">Instrument-label family (uppercase chips).</td></tr>
+              <tr><td class="k">vesta-font-size</td><td class="def">13</td><td class="desc">Base UI font size.</td></tr>
+              <tr><td class="k">vesta-divider-width</td><td class="def">8</td><td class="desc">Split-divider grab width.</td></tr>
+              <tr><td class="k">vesta-prefix</td><td class="def">ctrl+b</td><td class="desc">tmux-style prefix key. Empty value disables prefix mode.</td></tr>
+              <tr><td class="k">vesta-prefix-bind</td><td class="def">—</td><td class="desc">Rebind a prefix key: <code>&lt;key&gt;:&lt;action&gt;</code>, comma-separated for multiple, e.g. <code>v:split-vertical</code>. Actions: <code>split-vertical</code>, <code>split-horizontal</code>, <code>focus-left/down/up/right</code>, <code>zoom</code>, <code>new-session</code>, <code>next-session</code>, <code>prev-session</code>, <code>rename</code>, <code>detach</code>, <code>kill</code>.</td></tr>
+              <tr><td class="k">vesta-persist</td><td class="def">on</td><td class="desc">Run sessions through the background daemon so shells survive Vesta quitting. Set <code>false</code> for plain in-process shells (no persistence).</td></tr>
+              <tr><td class="k">vesta-persist-scrollback</td><td class="def">off</td><td class="desc">Mirror scrollback to disk so it survives a daemon restart. <strong>Off by default</strong> — terminal output can contain passwords/tokens; enable only if you accept on-disk persistence.</td></tr>
             </tbody>
           </table>
         </section>
@@ -75,17 +75,17 @@
         <section id="ghostty">
           <h2>Inherited Ghostty keys</h2>
           <p>Anything in the <a href="https://ghostty.org/docs/config">Ghostty config reference</a>
-            works in Halo. Colors, fonts, and themes sync automatically. A few common ones:</p>
+            works in Vesta. Colors, fonts, and themes sync automatically. A few common ones:</p>
           <table class="tbl">
             <tbody>
-              <tr><td class="k">theme</td><td class="desc">Named theme, e.g. <code>theme = "Atom"</code> (Halo bundles all 463).</td></tr>
+              <tr><td class="k">theme</td><td class="desc">Named theme, e.g. <code>theme = "Atom"</code> (Vesta bundles all 463).</td></tr>
               <tr><td class="k">font-family</td><td class="desc">Terminal font, e.g. <code>font-family = "Redaction 50"</code>.</td></tr>
               <tr><td class="k">background / foreground</td><td class="desc">Base colors, e.g. <code>#161719</code>.</td></tr>
               <tr><td class="k">cursor-color</td><td class="desc">Cursor color.</td></tr>
               <tr><td class="k">window-padding-x / -y</td><td class="desc">Inner padding around the grid.</td></tr>
             </tbody>
           </table>
-          <p>Change anything, then <code>Settings ▸ Reload</code> (or <code>halo reload</code>) — no relaunch.</p>
+          <p>Change anything, then <code>Settings ▸ Reload</code> (or <code>vesta reload</code>) — no relaunch.</p>
         </section>
 
         <section id="keys">
@@ -107,7 +107,7 @@
           </div>
 
           <h3>Prefix mode</h3>
-          <p>With <code>halo-prefix</code> set (default <kbd>⌃B</kbd>), press the prefix then a key:</p>
+          <p>With <code>vesta-prefix</code> set (default <kbd>⌃B</kbd>), press the prefix then a key:</p>
           <div class="keys">
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>%</kbd></span><span class="kd">Split vertically</span></div>
             <div class="row"><span class="ks"><kbd>⌃B</kbd> <kbd>"</kbd></span><span class="kd">Split horizontally</span></div>
@@ -123,7 +123,7 @@
 
         <section id="sessions">
           <h2>Sessions &amp; persistence</h2>
-          <p>Sessions run under a small background daemon (<code>halod</code>). Shells survive Halo
+          <p>Sessions run under a small background daemon (<code>vestad</code>). Shells survive Vesta
             quitting or crashing — and survive closing a window — then reattach on next launch with
             native scrollback restored. Long scrollback spills to disk, so history is recovered even
             if the daemon restarts; inline images replay across reattach.</p>
@@ -138,15 +138,15 @@
 
         <section id="cli">
           <h2>Agent control CLI</h2>
-          <p>The <code>halo</code> command drives and observes the running app over a unix socket
-            (<code>~/Library/Application&nbsp;Support/halo/control.sock</code>, owner-only) — built so a
+          <p>The <code>vesta</code> command drives and observes the running app over a unix socket
+            (<code>~/Library/Application&nbsp;Support/vesta/control.sock</code>, owner-only) — built so a
             script or an AI agent can run commands and read back what happened. Run bare
-            <code>halo</code> while the app is open and it opens a new window in the running instance.</p>
+            <code>vesta</code> while the app is open and it opens a new window in the running instance.</p>
 <pre><span class="c"># open an isolated worktree session, split it, run tests, read the output</span>
-halo <span class="a">worktree</span> fix/login
-halo <span class="a">split</span> -h
-halo <span class="a">send-keys</span> focused "npm test\n"
-halo <span class="a">capture</span> --scrollback</pre>
+vesta <span class="a">worktree</span> fix/login
+vesta <span class="a">split</span> -h
+vesta <span class="a">send-keys</span> focused "npm test\n"
+vesta <span class="a">capture</span> --scrollback</pre>
           <table class="tbl">
             <thead><tr><th>Verb</th><th>What it does</th></tr></thead>
             <tbody>
@@ -170,7 +170,7 @@ halo <span class="a">capture</span> --scrollback</pre>
               <tr><td class="k">project new|dir|rename|remove|color</td><td class="desc">Manage projects: <code>new [PATH] [--name X]</code> and <code>dir [PATH]</code> take a path or the dir you ran it from; also <code>rename &lt;name&gt;</code>, <code>remove</code>, <code>color &lt;#hex|none&gt;</code>. New sessions open in the project's <code>dir</code>; the sidebar <strong>+</strong> and the titlebar folder icon open a folder picker.</td></tr>
               <tr><td class="k">kill &lt;id&gt;</td><td class="desc">Terminate a session's shell under the daemon.</td></tr>
               <tr><td class="k">notify &lt;msg&gt;</td><td class="desc">Show a toast in the active window — handy for agents signalling a human.</td></tr>
-              <tr><td class="k">run &lt;name&gt;</td><td class="desc">Run a command registered with <code>halo.command(name, fn)</code> in Lua.</td></tr>
+              <tr><td class="k">run &lt;name&gt;</td><td class="desc">Run a command registered with <code>vesta.command(name, fn)</code> in Lua.</td></tr>
               <tr><td class="k">plugins [list]</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
               <tr><td class="k">plugins sync</td><td class="desc"><code>git pull</code> every plugin and reload.</td></tr>
               <tr><td class="k">plugins enable|disable &lt;name&gt;</td><td class="desc">Turn a plugin on/off (persisted) and reload. Also in Settings ▸ Plugins.</td></tr>
@@ -180,87 +180,87 @@ halo <span class="a">capture</span> --scrollback</pre>
 
         <section id="lua">
           <h2>Lua scripting</h2>
-          <p>Halo embeds <strong>Lua 5.4</strong>. On launch (and on <code>halo reload</code>) it runs
-            <code>~/.config/halo/init.lua</code> with a global <code>halo</code> table. A script error
+          <p>Vesta embeds <strong>Lua 5.4</strong>. On launch (and on <code>vesta reload</code>) it runs
+            <code>~/.config/vesta/init.lua</code> with a global <code>vesta</code> table. A script error
             is shown as a toast — it never crashes the app. Everything the
             <a href="#cli">control CLI</a> can do is reachable from Lua, plus UI you can't get from
             the CLI: floating panels, pickers, prompts, a statusline, and live config.</p>
-<pre><span class="c">-- ~/.config/halo/init.lua</span>
+<pre><span class="c">-- ~/.config/vesta/init.lua</span>
 
 <span class="c">-- toast when a command/agent turn finishes in any session</span>
-halo.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span class="a">function</span>(id) halo.notify(<span class="s">"done: "</span>..id) <span class="a">end</span>)
+vesta.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span class="a">function</span>(id) vesta.notify(<span class="s">"done: "</span>..id) <span class="a">end</span>)
 
 <span class="c">-- ctrl+g → git status in the focused pane</span>
-halo.<span class="a">bind</span>(<span class="s">"ctrl+g"</span>, <span class="a">function</span>() halo.send(<span class="s">"git status\n"</span>) <span class="a">end</span>)
+vesta.<span class="a">bind</span>(<span class="s">"ctrl+g"</span>, <span class="a">function</span>() vesta.send(<span class="s">"git status\n"</span>) <span class="a">end</span>)
 
-<span class="c">-- a command runnable with `halo run tests` or from a keybind</span>
-halo.<span class="a">command</span>(<span class="s">"tests"</span>, <span class="a">function</span>()
-  <span class="a">local</span> p = halo.active()
-  halo.notify(<span class="s">"running tests in "</span>..p.cwd)
-  halo.send(<span class="s">"npm test\n"</span>)
+<span class="c">-- a command runnable with `vesta run tests` or from a keybind</span>
+vesta.<span class="a">command</span>(<span class="s">"tests"</span>, <span class="a">function</span>()
+  <span class="a">local</span> p = vesta.active()
+  vesta.notify(<span class="s">"running tests in "</span>..p.cwd)
+  vesta.send(<span class="s">"npm test\n"</span>)
 <span class="a">end</span>)</pre>
 
-          <h3 id="lua-api">The <code>halo</code> API</h3>
+          <h3 id="lua-api">The <code>vesta</code> API</h3>
           <p>Register handlers (these persist across the script):</p>
           <table class="tbl">
             <thead><tr><th>API</th><th>What it does</th></tr></thead>
             <tbody>
-              <tr><td class="k">halo.command(name, fn)</td><td class="desc">Register a command, runnable via <code>halo run &lt;name&gt;</code> or from a keybind.</td></tr>
-              <tr><td class="k">halo.bind(chord, fn)</td><td class="desc">Bind a key chord (<code>"cmd+shift+p"</code>, <code>"ctrl+g"</code>, …) to a function.</td></tr>
-              <tr><td class="k">halo.on(event, fn)</td><td class="desc">Run <code>fn</code> on an <a href="#lua-events">event</a>; the handler gets the relevant paneID.</td></tr>
-              <tr><td class="k">halo.timer(seconds, fn)</td><td class="desc">Call <code>fn</code> every <code>seconds</code> (repeating). Cleared on reload.</td></tr>
-              <tr><td class="k">halo.plugin("owner/repo")</td><td class="desc">Declare a plugin; cloned from GitHub on first launch. See <a href="#lua-plugins">Plugins</a>.</td></tr>
+              <tr><td class="k">vesta.command(name, fn)</td><td class="desc">Register a command, runnable via <code>vesta run &lt;name&gt;</code> or from a keybind.</td></tr>
+              <tr><td class="k">vesta.bind(chord, fn)</td><td class="desc">Bind a key chord (<code>"cmd+shift+p"</code>, <code>"ctrl+g"</code>, …) to a function.</td></tr>
+              <tr><td class="k">vesta.on(event, fn)</td><td class="desc">Run <code>fn</code> on an <a href="#lua-events">event</a>; the handler gets the relevant paneID.</td></tr>
+              <tr><td class="k">vesta.timer(seconds, fn)</td><td class="desc">Call <code>fn</code> every <code>seconds</code> (repeating). Cleared on reload.</td></tr>
+              <tr><td class="k">vesta.plugin("owner/repo")</td><td class="desc">Declare a plugin; cloned from GitHub on first launch. See <a href="#lua-plugins">Plugins</a>.</td></tr>
             </tbody>
           </table>
           <p>Read &amp; drive the terminal (see <a href="#lua-control">below</a>):</p>
           <table class="tbl">
             <tbody>
-              <tr><td class="k">halo.active()</td><td class="desc">Focused session: <code>{cwd, title, paneID}</code> (or <code>nil</code>).</td></tr>
-              <tr><td class="k">halo.state()</td><td class="desc">Full tree: <code>{projects = {{name, path, sessions = {…}}, …}}</code>.</td></tr>
-              <tr><td class="k">halo.capture([scrollback])</td><td class="desc">Focused pane's text as a string; pass <code>true</code> to include scrollback.</td></tr>
-              <tr><td class="k">halo.send(text)</td><td class="desc">Type into the focused pane (include <code>"\n"</code> to run).</td></tr>
-              <tr><td class="k">halo.cmd(verb, …)</td><td class="desc">Run any <a href="#cli">CLI verb</a>; returns its result table.</td></tr>
-              <tr><td class="k">halo.split([h]) · halo.tab(a) · halo.select(p, s)</td><td class="desc">Split (<code>true</code> = horizontal); <code>tab</code> = <code>"new"/"next"/"prev"/"close"</code>; switch session.</td></tr>
-              <tr><td class="k">halo.open(path) · halo.zoom() · halo.browser([url]) · halo.focus([id])</td><td class="desc">Open a session at a path; zoom the pane; open a browser pane; focus/cycle panes.</td></tr>
+              <tr><td class="k">vesta.active()</td><td class="desc">Focused session: <code>{cwd, title, paneID}</code> (or <code>nil</code>).</td></tr>
+              <tr><td class="k">vesta.state()</td><td class="desc">Full tree: <code>{projects = {{name, path, sessions = {…}}, …}}</code>.</td></tr>
+              <tr><td class="k">vesta.capture([scrollback])</td><td class="desc">Focused pane's text as a string; pass <code>true</code> to include scrollback.</td></tr>
+              <tr><td class="k">vesta.send(text)</td><td class="desc">Type into the focused pane (include <code>"\n"</code> to run).</td></tr>
+              <tr><td class="k">vesta.cmd(verb, …)</td><td class="desc">Run any <a href="#cli">CLI verb</a>; returns its result table.</td></tr>
+              <tr><td class="k">vesta.split([h]) · vesta.tab(a) · vesta.select(p, s)</td><td class="desc">Split (<code>true</code> = horizontal); <code>tab</code> = <code>"new"/"next"/"prev"/"close"</code>; switch session.</td></tr>
+              <tr><td class="k">vesta.open(path) · vesta.zoom() · vesta.browser([url]) · vesta.focus([id])</td><td class="desc">Open a session at a path; zoom the pane; open a browser pane; focus/cycle panes.</td></tr>
             </tbody>
           </table>
           <p>Build UI (see <a href="#lua-ui">below</a>):</p>
           <table class="tbl">
             <tbody>
-              <tr><td class="k">halo.notify(msg)</td><td class="desc">Toast banner in the active window.</td></tr>
-              <tr><td class="k">halo.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id. Lines can be labels, clickable buttons, or editable fields (<code>{input=true, placeholder=, action=fn}</code>).</td></tr>
-              <tr><td class="k">halo.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
-              <tr><td class="k">halo.prompt(msg [, default], fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit. Optional pre-filled <code>default</code>.</td></tr>
-              <tr><td class="k">halo.confirm(msg, fn)</td><td class="desc">Yes/No dialog; <code>fn(true|false)</code>.</td></tr>
-              <tr><td class="k">halo.pick(items, fn [, opts])</td><td class="desc">Filterable list; <code>fn(label)</code>. Items are strings or <code>{label, desc}</code>. Hugs content by default.</td></tr>
-              <tr><td class="k">halo.pickmulti(items, fn [, opts])</td><td class="desc">Multi-select (Tab marks); <code>fn(table_of_labels)</code>.</td></tr>
-              <tr><td class="k">halo.menu(items [, opts])</td><td class="desc">Action list; each <code>{text, desc, action=fn}</code> runs its own action on select.</td></tr>
+              <tr><td class="k">vesta.notify(msg)</td><td class="desc">Toast banner in the active window.</td></tr>
+              <tr><td class="k">vesta.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id. Lines can be labels, clickable buttons, or editable fields (<code>{input=true, placeholder=, action=fn}</code>).</td></tr>
+              <tr><td class="k">vesta.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
+              <tr><td class="k">vesta.prompt(msg [, default], fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit. Optional pre-filled <code>default</code>.</td></tr>
+              <tr><td class="k">vesta.confirm(msg, fn)</td><td class="desc">Yes/No dialog; <code>fn(true|false)</code>.</td></tr>
+              <tr><td class="k">vesta.pick(items, fn [, opts])</td><td class="desc">Filterable list; <code>fn(label)</code>. Items are strings or <code>{label, desc}</code>. Hugs content by default.</td></tr>
+              <tr><td class="k">vesta.pickmulti(items, fn [, opts])</td><td class="desc">Multi-select (Tab marks); <code>fn(table_of_labels)</code>.</td></tr>
+              <tr><td class="k">vesta.menu(items [, opts])</td><td class="desc">Action list; each <code>{text, desc, action=fn}</code> runs its own action on select.</td></tr>
               <tr><td class="k" colspan="2" style="color:var(--dim)">picker <code>opts</code> (optional): <code>{width, height, maxrows, maxheight}</code> — default hugs content + scrolls; <code>height</code> forces a fixed-tall panel, <code>maxrows</code>/<code>maxheight</code> set the scroll threshold.</td></tr>
-              <tr><td class="k">halo.status(text)</td><td class="desc">Set the sidebar-footer statusline text.</td></tr>
-              <tr><td class="k">halo.set(key, value)</td><td class="desc">Override a config key from Lua (Lua wins). See <a href="#lua-config">Config from Lua</a>.</td></tr>
+              <tr><td class="k">vesta.status(text)</td><td class="desc">Set the sidebar-footer statusline text.</td></tr>
+              <tr><td class="k">vesta.set(key, value)</td><td class="desc">Override a config key from Lua (Lua wins). See <a href="#lua-config">Config from Lua</a>.</td></tr>
             </tbody>
           </table>
 
           <h3 id="lua-control">Reading &amp; driving the terminal</h3>
-          <p><code>halo.cmd(verb, ...)</code> runs any control verb and returns its result as a table;
+          <p><code>vesta.cmd(verb, ...)</code> runs any control verb and returns its result as a table;
             the named helpers (<code>capture</code>, <code>state</code>, <code>split</code>, …) wrap the
             common ones. This is how a Lua command inspects output and reacts — the same surface an
             external agent gets, in-process.</p>
 <pre><span class="c">-- watch a build; toast pass/fail by scanning the pane after each turn</span>
-halo.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span class="a">function</span>()
-  <span class="a">local</span> out = halo.<span class="a">capture</span>()          <span class="c">-- visible text; capture(true) for scrollback</span>
-  <span class="a">if</span> out:<span class="a">find</span>(<span class="s">"FAIL"</span>) <span class="a">then</span> halo.notify(<span class="s">"❌ tests failed"</span>)
-  <span class="a">elseif</span> out:<span class="a">find</span>(<span class="s">"PASS"</span>) <span class="a">then</span> halo.notify(<span class="s">"✅ green"</span>) <span class="a">end</span>
+vesta.<span class="a">on</span>(<span class="s">"command-finished"</span>, <span class="a">function</span>()
+  <span class="a">local</span> out = vesta.<span class="a">capture</span>()          <span class="c">-- visible text; capture(true) for scrollback</span>
+  <span class="a">if</span> out:<span class="a">find</span>(<span class="s">"FAIL"</span>) <span class="a">then</span> vesta.notify(<span class="s">"❌ tests failed"</span>)
+  <span class="a">elseif</span> out:<span class="a">find</span>(<span class="s">"PASS"</span>) <span class="a">then</span> vesta.notify(<span class="s">"✅ green"</span>) <span class="a">end</span>
 <span class="a">end</span>)
 
 <span class="c">-- count sessions across the whole sidebar</span>
 <span class="a">local</span> n = <span class="s">0</span>
-<span class="a">for</span> _, p <span class="a">in</span> <span class="a">ipairs</span>(halo.<span class="a">state</span>().projects) <span class="a">do</span> n = n + #p.sessions <span class="a">end</span>
+<span class="a">for</span> _, p <span class="a">in</span> <span class="a">ipairs</span>(vesta.<span class="a">state</span>().projects) <span class="a">do</span> n = n + #p.sessions <span class="a">end</span>
 
 <span class="c">-- open a worktree, split, run, read back — via raw cmd()</span>
-halo.<span class="a">cmd</span>(<span class="s">"worktree"</span>, <span class="s">"fix/login"</span>)
-halo.<span class="a">split</span>(<span class="a">true</span>)
-halo.<span class="a">send</span>(<span class="s">"npm test\n"</span>)</pre>
+vesta.<span class="a">cmd</span>(<span class="s">"worktree"</span>, <span class="s">"fix/login"</span>)
+vesta.<span class="a">split</span>(<span class="a">true</span>)
+vesta.<span class="a">send</span>(<span class="s">"npm test\n"</span>)</pre>
 
           <h3 id="lua-ui">Custom UI: panels, prompts, pickers, statusline</h3>
           <p>A <strong>panel</strong> is a floating, titled box pinned to a corner. <code>lines</code> is a
@@ -282,37 +282,37 @@ halo.<span class="a">send</span>(<span class="s">"npm test\n"</span>)</pre>
           </table>
 <pre><span class="c">-- a live clock that updates in place, in whichever window has focus</span>
 <span class="a">local</span> clock
-halo.<span class="a">timer</span>(<span class="s">1</span>, <span class="a">function</span>()
-  clock = halo.<span class="a">panel</span>({
+vesta.<span class="a">timer</span>(<span class="s">1</span>, <span class="a">function</span>()
+  clock = vesta.<span class="a">panel</span>({
     { text = <span class="a">os.date</span>(<span class="s">"%H:%M:%S"</span>), color = <span class="s">"#e0af68"</span> },
   }, { title = <span class="s">"clock"</span>, corner = <span class="s">"topright"</span>, window = <span class="s">"active"</span>, id = clock })
 <span class="a">end</span>)
 
 <span class="c">-- a button menu shown in EVERY window (click runs the function)</span>
-halo.<span class="a">panel</span>({
-  { text = <span class="s">"▶ split"</span>,   color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() halo.<span class="a">split</span>() <span class="a">end</span> },
-  { text = <span class="s">"＋ new tab"</span>, color = <span class="s">"#7aa2f7"</span>, click = <span class="a">function</span>() halo.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
+vesta.<span class="a">panel</span>({
+  { text = <span class="s">"▶ split"</span>,   color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() vesta.<span class="a">split</span>() <span class="a">end</span> },
+  { text = <span class="s">"＋ new tab"</span>, color = <span class="s">"#7aa2f7"</span>, click = <span class="a">function</span>() vesta.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
 }, { title = <span class="s">"actions"</span>, corner = <span class="s">"bottomright"</span>, bg = <span class="s">"#16161e"</span>, window = <span class="s">"all"</span> })
 
 <span class="c">-- prompt for text, then run it; or pick from a list</span>
-halo.<span class="a">bind</span>(<span class="s">"cmd+shift+p"</span>, <span class="a">function</span>()
-  halo.<span class="a">prompt</span>(<span class="s">"Run:"</span>, <span class="a">function</span>(cmd) <span class="a">if</span> cmd ~= <span class="s">""</span> <span class="a">then</span> halo.send(cmd..<span class="s">"\n"</span>) <span class="a">end</span> <span class="a">end</span>)
+vesta.<span class="a">bind</span>(<span class="s">"cmd+shift+p"</span>, <span class="a">function</span>()
+  vesta.<span class="a">prompt</span>(<span class="s">"Run:"</span>, <span class="a">function</span>(cmd) <span class="a">if</span> cmd ~= <span class="s">""</span> <span class="a">then</span> vesta.send(cmd..<span class="s">"\n"</span>) <span class="a">end</span> <span class="a">end</span>)
 <span class="a">end</span>)
-halo.<span class="a">pick</span>({ <span class="s">"git status"</span>, <span class="s">"npm test"</span>, <span class="s">"clear"</span> }, <span class="a">function</span>(c) halo.send(c..<span class="s">"\n"</span>) <span class="a">end</span>)
+vesta.<span class="a">pick</span>({ <span class="s">"git status"</span>, <span class="s">"npm test"</span>, <span class="s">"clear"</span> }, <span class="a">function</span>(c) vesta.send(c..<span class="s">"\n"</span>) <span class="a">end</span>)
 
 <span class="c">-- a command palette: each item runs its own action</span>
-halo.<span class="a">menu</span>({
-  { text = <span class="s">"split"</span>,   desc = <span class="s">"vertical"</span>, action = <span class="a">function</span>() halo.<span class="a">split</span>() <span class="a">end</span> },
-  { text = <span class="s">"new tab"</span>, action = <span class="a">function</span>() halo.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
+vesta.<span class="a">menu</span>({
+  { text = <span class="s">"split"</span>,   desc = <span class="s">"vertical"</span>, action = <span class="a">function</span>() vesta.<span class="a">split</span>() <span class="a">end</span> },
+  { text = <span class="s">"new tab"</span>, action = <span class="a">function</span>() vesta.<span class="a">tab</span>(<span class="s">"new"</span>) <span class="a">end</span> },
 })
 
-halo.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a">os.date</span>(<span class="s">"%H:%M"</span>))   <span class="c">-- sidebar-footer statusline</span></pre>
+vesta.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a">os.date</span>(<span class="s">"%H:%M"</span>))   <span class="c">-- sidebar-footer statusline</span></pre>
           <p>Panels pass clicks through to the terminal underneath except on buttons, so a corner
             HUD never gets in your way. Non-active-window copies of an <code>"active"</code> panel
             simply disappear until that window is focused again.</p>
 
           <h3 id="lua-events">Events &amp; timers</h3>
-          <p><code>halo.on(event, fn)</code> subscribes; <code>halo.timer(seconds, fn)</code> polls.
+          <p><code>vesta.on(event, fn)</code> subscribes; <code>vesta.timer(seconds, fn)</code> polls.
             Handlers receive the relevant <code>paneID</code> where it applies.</p>
           <div class="keys">
             <div class="row"><span class="ks"><code>session-opened</code></span><span class="kd">A session/tab was created (arg: paneID).</span></div>
@@ -322,71 +322,71 @@ halo.<span class="a">status</span>(<span class="s">"⏱ "</span>..<span class="a
             <div class="row"><span class="ks"><code>command-finished</code></span><span class="kd">A foreground command/agent turn returned to the shell (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>dir-changed</code></span><span class="kd">The focused pane's working directory changed (arg: paneID).</span></div>
             <div class="row"><span class="ks"><code>pane-output</code></span><span class="kd">Raw output bytes from any live pane: <code>fn(paneID, chunk)</code>. Best-effort/coalesced; persist mode only. Use <code>chunk:find(s, 1, true)</code>.</span></div>
-            <div class="row"><span class="ks"><code>config-reloaded</code></span><span class="kd">init.lua (re)loaded — fires once after load and on every <code>halo reload</code>.</span></div>
+            <div class="row"><span class="ks"><code>config-reloaded</code></span><span class="kd">init.lua (re)loaded — fires once after load and on every <code>vesta reload</code>.</span></div>
           </div>
           <p>Plugins are sandboxed: a callback that errors repeatedly auto-disables its plugin
-            (<code>halo plugins enable &lt;name&gt;</code> to restore), and an infinite loop in a
+            (<code>vesta plugins enable &lt;name&gt;</code> to restore), and an infinite loop in a
             callback is aborted rather than freezing the UI. Scrollback is persisted to disk, so a
             pane's history survives a daemon restart.</p>
 
           <h3 id="lua-config">Config from Lua</h3>
-          <p><code>halo.set(key, value)</code> sets a config key from your script. Short chrome names
+          <p><code>vesta.set(key, value)</code> sets a config key from your script. Short chrome names
             (<code>accent</code>, <code>surface</code>, <code>font-family</code>,
             <code>sidebar-width</code>, <code>font-size</code>, <code>divider-width</code>) get the
-            <code>halo-</code> prefix; any other key is treated as a raw
+            <code>vesta-</code> prefix; any other key is treated as a raw
             <a href="#ghostty">Ghostty key</a> (e.g. <code>background</code>) and reaches libghostty.
             <strong>Lua wins</strong> over the config file and the Settings UI — a key set here shows
             as locked with a “set by init.lua” badge in Settings.</p>
 <pre><span class="c">-- a dark theme as a script: chrome + terminal share one background</span>
-halo.<span class="a">set</span>(<span class="s">"background"</span>, <span class="s">"#0a0b0f"</span>)   <span class="c">-- ghostty terminal bg</span>
-halo.<span class="a">set</span>(<span class="s">"surface"</span>,    <span class="s">"#0a0b0f"</span>)   <span class="c">-- halo chrome → halo-surface</span>
-halo.<span class="a">set</span>(<span class="s">"accent"</span>,     <span class="s">"#ff3366"</span>)   <span class="c">-- → halo-accent</span></pre>
+vesta.<span class="a">set</span>(<span class="s">"background"</span>, <span class="s">"#0a0b0f"</span>)   <span class="c">-- ghostty terminal bg</span>
+vesta.<span class="a">set</span>(<span class="s">"surface"</span>,    <span class="s">"#0a0b0f"</span>)   <span class="c">-- vesta chrome → vesta-surface</span>
+vesta.<span class="a">set</span>(<span class="s">"accent"</span>,     <span class="s">"#ff3366"</span>)   <span class="c">-- → vesta-accent</span></pre>
 
           <h3 id="lua-plugins">Plugins</h3>
-          <p>A plugin is just Lua using the same <code>halo</code> API. Declare one in
-            <code>init.lua</code> and Halo clones it into <code>~/.config/halo/plugins/&lt;name&gt;/</code>
+          <p>A plugin is just Lua using the same <code>vesta</code> API. Declare one in
+            <code>init.lua</code> and Vesta clones it into <code>~/.config/vesta/plugins/&lt;name&gt;/</code>
             on first launch; or drop a folder there yourself — no declaration needed. Each plugin's
             <code>init.lua</code> (or <code>plugin/init.lua</code>) runs at startup and registers its
             own commands, events, keybinds, and UI.</p>
-<pre><span class="c">-- ~/.config/halo/init.lua</span>
-halo.<span class="a">plugin</span>(<span class="s">"you/halo-statusbar"</span>)                       <span class="c">-- latest from github.com/you/halo-statusbar</span>
-halo.<span class="a">plugin</span>(<span class="s">"you/halo-fzf"</span>, { ref = <span class="s">"v1.2.0"</span>, priority = <span class="s">10</span> })   <span class="c">-- pinned + loads first</span>
+<pre><span class="c">-- ~/.config/vesta/init.lua</span>
+vesta.<span class="a">plugin</span>(<span class="s">"you/vesta-statusbar"</span>)                       <span class="c">-- latest from github.com/you/vesta-statusbar</span>
+vesta.<span class="a">plugin</span>(<span class="s">"you/vesta-fzf"</span>, { ref = <span class="s">"v1.2.0"</span>, priority = <span class="s">10</span> })   <span class="c">-- pinned + loads first</span>
 
-<span class="c">-- ~/.config/halo/plugins/git-hud/init.lua  (a complete drop-in plugin)</span>
+<span class="c">-- ~/.config/vesta/plugins/git-hud/init.lua  (a complete drop-in plugin)</span>
 <span class="a">local</span> id
-halo.<span class="a">timer</span>(<span class="s">2</span>, <span class="a">function</span>()
-  <span class="a">local</span> a = halo.<span class="a">active</span>(); <span class="a">if</span> <span class="a">not</span> a <span class="a">then</span> <span class="a">return</span> <span class="a">end</span>
-  id = halo.<span class="a">panel</span>({
+vesta.<span class="a">timer</span>(<span class="s">2</span>, <span class="a">function</span>()
+  <span class="a">local</span> a = vesta.<span class="a">active</span>(); <span class="a">if</span> <span class="a">not</span> a <span class="a">then</span> <span class="a">return</span> <span class="a">end</span>
+  id = vesta.<span class="a">panel</span>({
     { text = a.cwd, color = <span class="s">"#7dcfff"</span> },
-    { text = <span class="s">"⟳ fetch"</span>, color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() halo.send(<span class="s">"git fetch\n"</span>) <span class="a">end</span> },
+    { text = <span class="s">"⟳ fetch"</span>, color = <span class="s">"#9ece6a"</span>, click = <span class="a">function</span>() vesta.send(<span class="s">"git fetch\n"</span>) <span class="a">end</span> },
   }, { title = <span class="s">"git"</span>, corner = <span class="s">"topleft"</span>, window = <span class="s">"all"</span>, id = id })
 <span class="a">end</span>)</pre>
           <table class="tbl">
             <thead><tr><th>Manage</th><th>—</th></tr></thead>
             <tbody>
-              <tr><td class="k">halo plugins</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
-              <tr><td class="k">halo plugins sync</td><td class="desc">Update each plugin and reload — pinned plugins fetch + checkout their <code>ref</code>, the rest fast-forward.</td></tr>
-              <tr><td class="k">halo plugins enable|disable &lt;name&gt;</td><td class="desc">Toggle a plugin (persisted) and reload. Also in <strong>Settings ▸ Plugins</strong>.</td></tr>
+              <tr><td class="k">vesta plugins</td><td class="desc">List installed plugins; disabled ones are marked.</td></tr>
+              <tr><td class="k">vesta plugins sync</td><td class="desc">Update each plugin and reload — pinned plugins fetch + checkout their <code>ref</code>, the rest fast-forward.</td></tr>
+              <tr><td class="k">vesta plugins enable|disable &lt;name&gt;</td><td class="desc">Toggle a plugin (persisted) and reload. Also in <strong>Settings ▸ Plugins</strong>.</td></tr>
             </tbody>
           </table>
           <p>Disabling a plugin re-runs config cleanly, so a theme plugin's colors revert the moment
             you turn it off — no relaunch.</p>
 
           <h4>Pinning, manifest &amp; lockfile</h4>
-          <p>Pass a table to <code>halo.plugin</code> to pin a <code>ref</code> (tag, branch, or commit)
+          <p>Pass a table to <code>vesta.plugin</code> to pin a <code>ref</code> (tag, branch, or commit)
             and/or set a load <code>priority</code> (higher loads first; ties break by name). A plugin
             can also self-describe with an optional <code>manifest.lua</code> — useful for drop-ins,
             since they have no declaration. Declared options win over the manifest.</p>
 <pre><span class="c">-- a plugin's manifest.lua</span>
 <span class="a">return</span> { version = <span class="s">"1.2.0"</span>, priority = <span class="s">10</span> }</pre>
-          <p>Every load writes <code>~/.config/halo/plugins.lock</code> — the resolved commit, ref, and
+          <p>Every load writes <code>~/.config/vesta/plugins.lock</code> — the resolved commit, ref, and
             version of each installed plugin — so an install is reproducible and you can see exactly
-            what's running. <code>halo plugins</code> shows it inline:</p>
-<pre>halo plugins
-<span class="c">→</span> halo-fzf      v1.2.0  @v1.2.0  (9283de5)
-<span class="c">→</span> halo-statusbar         (a1b2c3d)
+            what's running. <code>vesta plugins</code> shows it inline:</p>
+<pre>vesta plugins
+<span class="c">→</span> vesta-fzf      v1.2.0  @v1.2.0  (9283de5)
+<span class="c">→</span> vesta-statusbar         (a1b2c3d)
 <span class="c">→</span> git-hud       <span class="c">-- drop-in, not a git repo</span></pre>
-          <p><code>halo.plugin</code> also accepts a full URL (<code>https://…</code>, <code>git@…</code>,
+          <p><code>vesta.plugin</code> also accepts a full URL (<code>https://…</code>, <code>git@…</code>,
             <code>file://…</code>) or an absolute path, not just <code>owner/repo</code> — handy for
             private repos and local plugin development.</p>
         </section>
@@ -396,7 +396,7 @@ halo.<span class="a">timer</span>(<span class="s">2</span>, <span class="a">func
 
   <footer class="foot">
     <span>Alpha · macOS only · built on libghostty</span>
-    <a href="https://github.com/notnaki/Halo">GitHub ↗</a>
+    <a href="https://github.com/notnaki/Vesta">GitHub ↗</a>
   </footer>
 </body>
 </html>
