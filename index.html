@@ -5,29 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vesta — a native macOS terminal on libghostty</title>
 <meta name="description" content="A native macOS terminal emulator built on libghostty. GPU-rendered, scriptable by agents, with a git-worktree session per task.">
-<link rel="icon" href="assets/favicon.png">
+<link rel="icon" href="assets/vesta-icon.png">
+<link rel="apple-touch-icon" href="assets/vesta-icon.png">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="home">
   <main class="hero">
-    <svg class="mark" viewBox="0 0 512 512" width="128" height="128" role="img" aria-label="Vesta">
-      <defs>
-        <linearGradient id="tile" x1="0" y1="0" x2="0" y2="512" gradientUnits="userSpaceOnUse">
-          <stop offset="0" stop-color="#1c1d20"/><stop offset="1" stop-color="#141517"/></linearGradient>
-        <!-- mosaic pixelation: sample the flame on a grid and dilate each sample into a block.
-             JS drives the cell size (pxCell/pxFlood/pxMorph) — big blocks at full corruption, shrinking to clean. -->
-        <filter id="px" filterUnits="userSpaceOnUse" primitiveUnits="userSpaceOnUse" x="120" y="100" width="280" height="320">
-          <feFlood id="pxFlood" x="120" y="100" width="2" height="2" flood-color="#fff" result="d"/>
-          <feComposite id="pxCell" in="d" width="8" height="8"/>
-          <feTile result="a"/>
-          <feComposite in="SourceGraphic" in2="a" operator="in"/>
-          <feMorphology id="pxMorph" operator="dilate" radius="4"/>
-        </filter>
-      </defs>
-      <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#tile)"/>
-      <rect x="16.5" y="16.5" width="479" height="479" rx="107.5" fill="none" stroke="#ffffff" stroke-opacity="0.05"/>
-      <path id="flame" d="M188 150 C 196 232 236 252 252 250 C 232 220 236 168 256 128 C 300 196 322 232 322 282 L256 392 L188 150 Z" fill="#ffffff"/>
-    </svg>
+    <img id="mark" class="mark" src="assets/icon/0-white.png" width="128" height="128" alt="Vesta">
     <h1 class="wordmark" aria-label="Vesta"><span>V</span><span>e</span><span>s</span><span>t</span><span>a</span></h1>
     <p class="lede">A native&nbsp;macOS terminal on <a href="https://ghostty.org">libghostty</a> —
       GPU-rendered, scriptable by agents, a git&#8209;worktree session per task.</p>
@@ -41,60 +25,72 @@
     <a href="https://github.com/notnaki/Vesta">GitHub ↗</a>
   </footer>
   <script>
-    // landing: letters spin through Redaction grades, then settle left-to-right (slot-machine feel)
+    // landing: the mark de-corrupts (pixelated pink → clean white) while the wordmark
+    // letters spin through Redaction grades and settle left-to-right (slot-machine feel)
     (function () {
-      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var mark = document.getElementById("mark");
+      // Frames most-corrupt → clean: the 40 anim-NN stages (exported from the
+      // AppIcon-anim/Vesta-anim-NN.icon docs, coarsest = 40), then pink, then clean white.
+      // We keep only the ones that actually load, so the cycle self-heals if any is missing.
+      var pad = function (n) { return n < 10 ? "0" + n : "" + n; };
+      var candidates = [];
+      for (var i = 40; i >= 1; i--) candidates.push("assets/icon/anim-" + pad(i) + ".png");
+      candidates.push("assets/icon/1-pink.png", "assets/icon/0-white.png");
+      var clean = "assets/icon/0-white.png";
+
       var gradeNums = [10, 20, 35, 50, 70, 100];
       var grades = gradeNums.map(function (n) { return "Redaction " + n; });
       var letters = document.querySelectorAll(".wordmark span");
-      if (!letters.length) return;
       function fam(g) { return '"' + g + '", Georgia, serif'; }
-      // corruptness → color: grade 10 ≈ white, grade 100 = full pink (lerp white→#ff3d7a)
-      function corruptColor(n) {
+      function corruptColor(n) {   // grade 10 ≈ white, grade 100 = full pink
         var t = (n - 10) / 90;
         return "rgb(255," + Math.round(255 - t * 194) + "," + Math.round(255 - t * 133) + ")";
       }
 
-      var flame = document.getElementById("flame");
-      var pxFlood = document.getElementById("pxFlood"), pxCell = document.getElementById("pxCell"), pxMorph = document.getElementById("pxMorph");
       var totalMs = 850 + letters.length * 200;
-      // set the mosaic cell size (userspace units in the 512 viewBox); 0 ≈ clean
-      function setPixel(S) {
-        // tile origin is the filter region origin (120,100); keep the sample dot there and grow the cell
-        pxFlood.setAttribute("width", Math.max(1, 0.3 * S).toFixed(1)); pxFlood.setAttribute("height", Math.max(1, 0.3 * S).toFixed(1));
-        pxCell.setAttribute("width", S.toFixed(1)); pxCell.setAttribute("height", S.toFixed(1));
-        pxMorph.setAttribute("radius", (0.55 * S).toFixed(1));
-      }
-      function run() {
+      var markMs = totalMs;   // mark resolves in lockstep with the wordmark settling
+      function run(frames) {
+        if (matchMedia("(prefers-reduced-motion: reduce)").matches) { if (mark) mark.src = clean; return; }
+        if (mark && frames.length) mark.src = frames[0];
         var locked = [], step = 0;
-        if (flame) flame.setAttribute("filter", "url(#px)");
         var tick = setInterval(function () {
           step++;
           letters.forEach(function (el, i) {
             if (locked[i]) return;
-            var idx = (step + i) % grades.length; // sequential, not random
+            var idx = (step + i) % grades.length;
             el.style.fontFamily = fam(grades[idx]);
-            el.style.color = corruptColor(gradeNums[idx]); // pinker the more redacted, white when pristine
+            el.style.color = corruptColor(gradeNums[idx]);
           });
-          var c = Math.max(0, 1 - (step * 90) / totalMs);   // corruptness, 1→0 over the sequence
-          // the V flame flickers through the same white→pink range, in sync
-          if (flame) flame.setAttribute("fill", corruptColor(gradeNums[step % gradeNums.length]));
-          // …and pixelates: big blocks while corrupt, shrinking to crisp as it settles
-          setPixel(2 + 46 * c);
         }, 90);
+        // mark: one-way resolve, stepping straight from most-corrupt to clean.
+        var last = frames.length - 1, g = 0;
+        var gtick = setInterval(function () {
+          g++;
+          if (mark) mark.src = frames[Math.min(last, g)];
+          if (g >= last) clearInterval(gtick);
+        }, markMs / (last + 1));
         letters.forEach(function (el, i) {
           setTimeout(function () { locked[i] = true; el.style.fontFamily = ""; el.style.color = ""; }, 850 + i * 200);
         });
-        setTimeout(function () {
-          clearInterval(tick);
-          if (flame) { flame.setAttribute("fill", "#ffffff"); flame.removeAttribute("filter"); }
-        }, totalMs);
+        setTimeout(function () { clearInterval(tick); }, totalMs);
+        setTimeout(function () { clearInterval(gtick); if (mark) mark.src = clean; }, markMs);
       }
 
-      // preload every grade first so the spin never flashes the Georgia fallback
-      if (document.fonts && document.fonts.load) {
-        Promise.all(grades.map(function (g) { return document.fonts.load('120px ' + JSON.stringify(g)); })).then(run, run);
-      } else { run(); }
+      // preload candidates; keep (in order) only those that load, then start once fonts are ready
+      var loaded = {}, pending = candidates.length;
+      function ready() {
+        var frames = candidates.filter(function (s) { return loaded[s]; });
+        var go = function () { run(frames); };
+        if (document.fonts && document.fonts.load) {
+          Promise.all(grades.map(function (g) { return document.fonts.load('120px ' + JSON.stringify(g)); })).then(go, go);
+        } else { go(); }
+      }
+      candidates.forEach(function (src) {
+        var im = new Image();
+        im.onload = function () { loaded[src] = true; if (--pending === 0) ready(); };
+        im.onerror = function () { if (--pending === 0) ready(); };
+        im.src = src;
+      });
     })();
   </script>
 </body>
