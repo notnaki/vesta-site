@@ -229,7 +229,7 @@ vesta.<span class="a">command</span>(<span class="s">"tests"</span>, <span class
           <table class="tbl">
             <tbody>
               <tr><td class="k">vesta.notify(msg [, opts])</td><td class="desc">Stacking in-app toast + an entry in the titlebar bell (history persists). <code>opts = {title, desktop}</code>: a macOS Notification Center banner fires when Vesta is backgrounded; <code>desktop = true</code> forces one even when focused. (Desktop banners need the bundled app.)</td></tr>
-              <tr><td class="k">vesta.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id. Lines can be labels, clickable buttons, or editable fields (<code>{input=true, placeholder=, action=fn}</code>).</td></tr>
+              <tr><td class="k">vesta.panel(lines, opts)</td><td class="desc">Create/update a floating panel; returns its id. Lines can be labels, clickable rows, editable fields (<code>{input=true, placeholder=, action=fn}</code>), images (<code>{svg="&lt;svg…&gt;"}</code> or <code>{image="/path"}</code>, optional <code>h=</code>), or any line with a colored <code>prefix=</code> + <code>prefixColor=</code> (e.g. a graph gutter). <code>opts.height</code> scrolls content in a fixed height. Panels are draggable cards (snap to grid + corners), click to focus, <code>–</code> to edge-minimize; position persists per <code>title</code>.</td></tr>
               <tr><td class="k">vesta.close(id)</td><td class="desc">Remove a panel by id.</td></tr>
               <tr><td class="k">vesta.prompt(msg [, default], fn)</td><td class="desc">Text-input overlay; <code>fn(text)</code> on submit. Optional pre-filled <code>default</code>.</td></tr>
               <tr><td class="k">vesta.confirm(msg, fn)</td><td class="desc">Yes/No dialog; <code>fn(true|false)</code>.</td></tr>
@@ -348,7 +348,9 @@ vesta.<span class="a">set</span>(<span class="s">"accent"</span>,     <span clas
             <code>init.lua</code> and Vesta clones it into <code>~/.config/vesta/plugins/&lt;name&gt;/</code>
             on first launch; or drop a folder there yourself — no declaration needed. Each plugin's
             <code>init.lua</code> (or <code>plugin/init.lua</code>) runs at startup and registers its
-            own commands, events, keybinds, and UI.</p>
+            own commands, events, keybinds, and UI. For ready-made examples to copy and learn
+            from, see <a href="https://github.com/notnaki/vesta-plugins">notnaki/vesta-plugins</a>
+            (git-tree, command-palette, a pomodoro timer, …).</p>
 <pre><span class="c">-- ~/.config/vesta/init.lua</span>
 vesta.<span class="a">plugin</span>(<span class="s">"you/vesta-statusbar"</span>)                       <span class="c">-- latest from github.com/you/vesta-statusbar</span>
 vesta.<span class="a">plugin</span>(<span class="s">"you/vesta-fzf"</span>, { ref = <span class="s">"v1.2.0"</span>, priority = <span class="s">10</span> })   <span class="c">-- pinned + loads first</span>
